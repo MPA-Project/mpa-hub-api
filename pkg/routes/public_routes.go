@@ -6,15 +6,13 @@ import (
 )
 
 // PublicRoutes func for describe group of public routes.
-func PublicRoutes(a *fiber.App) {
-	// Create routes group.
-	route := a.Group("/api/v1")
+func PublicRoutes(app *fiber.App) {
 
-	// Routes for POST method:
-	route.Post("/user", oauth.CreateUser) // create a new user
+	// Group Oauth routes
+	routeOauth := app.Group("/oauth/")
+	routeOauth.Get("/users", oauth.GetUsers)       // Get all users
+	routeOauth.Get("/user/:userId", oauth.GetUser) // get one user by ID
+	routeOauth.Post("/user", oauth.CreateUser)     // create a new user
 
-	// Routes for GET method:
-	// route.Get("/books", controllers.GetBooks)              // get list of all books
-	// route.Get("/book/:id", controllers.GetBook)            // get one book by ID
 	// route.Get("/token/new", controllers.GetNewAccessToken) // create a new access tokens
 }
