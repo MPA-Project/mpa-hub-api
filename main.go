@@ -4,10 +4,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	_ "github.com/joho/godotenv/autoload"
 	"myponyasia.com/hub-api/pkg/configs"
+	"myponyasia.com/hub-api/pkg/database"
 	"myponyasia.com/hub-api/pkg/middleware"
 	"myponyasia.com/hub-api/pkg/routes"
 	"myponyasia.com/hub-api/pkg/utils"
-	"myponyasia.com/hub-api/platform/database"
 )
 
 func main() {

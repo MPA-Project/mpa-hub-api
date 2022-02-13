@@ -4,8 +4,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"myponyasia.com/hub-api/app/models"
+	"myponyasia.com/hub-api/pkg/database"
 	"myponyasia.com/hub-api/pkg/utils"
-	"myponyasia.com/hub-api/platform/database"
 )
 
 func CreateUser(c *fiber.Ctx) error {

@@ -5,11 +5,12 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
 )
 
 // GenerateNewAccessToken func for generate a new Access token.
-func GenerateNewAccessToken() (string, error) {
+func GenerateNewAccessToken(uuid string) (string, error) {
 	// Set secret key from .env file.
 	secret := os.Getenv("JWT_SECRET_KEY")
 
@@ -21,6 +22,9 @@ func GenerateNewAccessToken() (string, error) {
 
 	// Set public claims:
 	claims["exp"] = time.Now().Add(time.Minute * time.Duration(minutesCount)).Unix()
+	claims["data"] = fiber.Map{
+		"uuid": uuid,
+	}
 
 	// Create a new JWT access token with claims.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
