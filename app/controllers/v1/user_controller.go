@@ -64,7 +64,7 @@ func GetUsers(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"error":   true,
+		"error":   false,
 		"message": "Users Found",
 		"data":    users,
 	})
