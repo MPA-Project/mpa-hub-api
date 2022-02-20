@@ -27,6 +27,8 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	}
 	u.Password = hash
 
+	u.Role = "USER"
+
 	// if u.Role == "admin" {
 	// 	return errors.New("invalid role")
 	// }

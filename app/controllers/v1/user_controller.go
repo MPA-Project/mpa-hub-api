@@ -34,8 +34,6 @@ func CreateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	user.Role = "USER"
-
 	err := database.DB.Create(user).Error
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{

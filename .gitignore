@@ -10,6 +10,7 @@ tmp/
 
 # Environment variables
 .env
+.env.server
 
 *.exe
 *.txt
