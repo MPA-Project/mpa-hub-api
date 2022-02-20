@@ -10,7 +10,7 @@ import (
 func PublicRoutes(app *fiber.App) {
 
 	// Group V1 routes
-	routeV1 := app.Group("/v1/")
+	routeV1 := app.Group("/v1")
 	routeV1.Get("/users", v1.GetUsers)       // Get all users
 	routeV1.Get("/user/:userId", v1.GetUser) // get one user by ID
 	routeV1.Post("/user", v1.CreateUser)     // create a new user

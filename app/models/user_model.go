@@ -8,10 +8,12 @@ import (
 
 // User struct to describe object.
 type User struct {
-	ID       uuid.UUID `gorm:"primary_key,type:uuid"`
-	Username string    `json:"username" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
-	Email    string    `json:"email" validate:"required,lte=255" gorm:"unique;type:varchar(255);not null;"`
-	Password string    `json:"password" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
+	ID          uuid.UUID `gorm:"primary_key,type:uuid"`
+	Username    string    `json:"username" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
+	Email       string    `json:"email" validate:"required,lte=255" gorm:"unique;type:varchar(255);not null;"`
+	Password    string    `json:"password" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
+	Role        string    `gorm:"type:varchar(255);not null;"`
+	SocialMedia string    `json:"social_media" gorm:"type:text;null;"`
 
 	gorm.Model
 }
