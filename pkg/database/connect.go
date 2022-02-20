@@ -55,6 +55,8 @@ func ConnectDB() {
 		&models.User{},
 		&models.Group{},
 		&models.UserGroup{},
+		&models.Language{},
+		&models.Synopsis{},
 	)
 	fmt.Println("Database Migrated")
 }
