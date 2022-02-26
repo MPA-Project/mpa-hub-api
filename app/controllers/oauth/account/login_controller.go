@@ -11,6 +11,7 @@ import (
 type SigninPayload struct {
 	Email    string `json:"email" validate:"required,lte=255"`
 	Password string `json:"password" validate:"required,lte=255"`
+	Token    string `json:"token" validate:"required"`
 }
 
 func Login(c *fiber.Ctx) error {
@@ -30,10 +31,17 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
+	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "signin"); err != nil && !resultCaptcha {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
 	var userEmail models.User
 	err := database.DB.Find(&userEmail, "email = ?", payload.Email).Error
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": "Credentials inccorect",
 			"data":    nil,
@@ -41,7 +49,7 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	if !hash.CheckPasswordHash(payload.Password, userEmail.Password) {
-		return c.JSON(fiber.Map{
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 			"error":   true,
 			"message": "Credentials inccorect",
 			"data":    nil,
