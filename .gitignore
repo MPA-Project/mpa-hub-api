@@ -13,4 +13,5 @@ tmp/
 .env.server
 
 *.exe
+*.exe*
 *.txt

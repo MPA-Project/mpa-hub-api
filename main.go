@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
 	_ "github.com/joho/godotenv/autoload"
 	"myponyasia.com/hub-api/pkg/configs"
 	"myponyasia.com/hub-api/pkg/database"
@@ -22,6 +23,9 @@ func main() {
 
 	// Middlewares.
 	middleware.FiberMiddleware(app) // Register Fiber's middleware for app.
+
+	// Monitor
+	app.Get("/dashboard", monitor.New())
 
 	// Base route
 	app.Get("/", func(c *fiber.Ctx) error {
