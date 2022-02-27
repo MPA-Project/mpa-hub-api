@@ -28,9 +28,6 @@ func FiberMiddleware(a *fiber.App) {
 			},
 			Max:        60,
 			Expiration: 60 * time.Second,
-			KeyGenerator: func(c *fiber.Ctx) string {
-				return c.Get("x-forwarded-for")
-			},
 			LimitReached: func(c *fiber.Ctx) error {
 				return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
 					"error": true,
