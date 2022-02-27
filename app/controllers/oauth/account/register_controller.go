@@ -13,7 +13,7 @@ type SignupPayload struct {
 	Username        string `json:"username" validate:"required,lte=255"`
 	Email           string `json:"email" validate:"required,lte=255,email"`
 	Password        string `json:"password" validate:"required,lte=25"`
-	PasswordConfirm string `json:"passwordConfirm" validate:"required,lte=25,eqfield=password"`
+	PasswordConfirm string `json:"passwordConfirm" validate:"required,lte=25"`
 	Token           string `json:"token" validate:"required"`
 }
 
@@ -31,6 +31,13 @@ func Register(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": utils.ValidatorErrors(err),
+		})
+	}
+
+	if payload.Password != payload.PasswordConfirm {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": "Passwords do not match",
 		})
 	}
 
