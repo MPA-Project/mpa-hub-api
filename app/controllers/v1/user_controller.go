@@ -12,16 +12,16 @@ func CreateUser(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
+			"error":   true,
+			"message": err.Error(),
 		})
 	}
 
 	validate := utils.NewValidator()
 	if err := validate.Struct(user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
-			"msg":   utils.ValidatorErrors(err),
+			"error":   true,
+			"message": utils.ValidatorErrors(err),
 		})
 	}
 
@@ -29,23 +29,31 @@ func CreateUser(c *fiber.Ctx) error {
 	database.DB.Model(&models.User{}).Where("email = ?", user.Email).Count(&countUserEmail)
 	if countUserEmail > 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
-			"msg":   "Email already used",
+			"error":   true,
+			"message": "Email already used",
 		})
 	}
 
 	err := database.DB.Create(user).Error
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	token, err := utils.GenerateNewAccessToken(user.ID.String())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
 		"error":   false,
 		"message": "Created User",
-		"data":    user,
+		"data":    token,
 	})
 }
 

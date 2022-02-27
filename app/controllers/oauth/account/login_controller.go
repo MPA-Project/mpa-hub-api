@@ -18,23 +18,23 @@ func Login(c *fiber.Ctx) error {
 	payload := new(SigninPayload)
 	if err := c.BodyParser(payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
+			"error":   true,
+			"message": err.Error(),
 		})
 	}
 
 	validate := utils.NewValidator()
 	if err := validate.Struct(payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
-			"msg":   utils.ValidatorErrors(err),
+			"error":   true,
+			"message": utils.ValidatorErrors(err),
 		})
 	}
 
 	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "signin"); err != nil && !resultCaptcha {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
+			"error":   true,
+			"message": err.Error(),
 		})
 	}
 
@@ -59,8 +59,8 @@ func Login(c *fiber.Ctx) error {
 	token, err := utils.GenerateNewAccessToken(userEmail.ID.String())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
+			"error":   true,
+			"message": err.Error(),
 		})
 	}
 
