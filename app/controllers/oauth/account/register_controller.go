@@ -11,9 +11,9 @@ import (
 
 type SignupPayload struct {
 	Username        string `json:"username" validate:"required,lte=255"`
-	Email           string `json:"email" validate:"required,lte=255"`
+	Email           string `json:"email" validate:"required,lte=255,email"`
 	Password        string `json:"password" validate:"required,lte=25"`
-	PasswordConfirm string `json:"passwordConfirm" validate:"required,lte=25"`
+	PasswordConfirm string `json:"passwordConfirm" validate:"required,lte=25,eqfield=password"`
 	Token           string `json:"token" validate:"required"`
 }
 
