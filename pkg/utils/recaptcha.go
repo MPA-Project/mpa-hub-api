@@ -13,7 +13,7 @@ func CaptchaVerifyToken(token string, action string) (bool, error) {
 		return false, err
 	}
 
-	err = captcha.VerifyWithOptions(token, recaptcha.VerifyOption{Action: action, Threshold: 0.8, Hostname: "localhost"})
+	err = captcha.VerifyWithOptions(token, recaptcha.VerifyOption{Action: action, Threshold: 0.8, Hostname: os.Getenv("RECAPTCHA_HOSTNAME")})
 	if err != nil {
 		return false, err
 	}
