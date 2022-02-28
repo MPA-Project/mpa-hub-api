@@ -6,7 +6,6 @@ import (
 	"myponyasia.com/hub-api/pkg/utils/hash"
 )
 
-// User struct to describe object.
 type User struct {
 	ID          uuid.UUID `gorm:"primary_key,type:uuid"`
 	Username    string    `json:"username" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
@@ -14,6 +13,10 @@ type User struct {
 	Password    string    `json:"password" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
 	Role        string    `gorm:"type:varchar(255);not null;"`
 	SocialMedia string    `json:"social_media" gorm:"type:text;null;"`
+	EmailVerify bool      `gorm:"type:boolean;default:false;"`
+	TFAEnable   bool      `gorm:"type:boolean;default:false;"`
+	TFAKey      string    `gorm:"type:varchar(255);null;"`
+	TFABackup   string    `gorm:"type:text;null;"`
 
 	gorm.Model
 }
@@ -28,6 +31,9 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	u.Password = hash
 
 	u.Role = "USER"
+
+	u.EmailVerify = false
+	u.TFAEnable = false
 
 	// if u.Role == "admin" {
 	// 	return errors.New("invalid role")

@@ -12,3 +12,8 @@ type Synopsis struct {
 
 	gorm.Model
 }
+
+func (u *Synopsis) BeforeCreate(tx *gorm.DB) (err error) {
+	u.ID = uuid.New()
+	return
+}

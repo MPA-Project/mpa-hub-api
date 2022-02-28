@@ -13,3 +13,8 @@ type UserGroup struct {
 
 	gorm.Model
 }
+
+func (u *UserGroup) BeforeCreate(tx *gorm.DB) (err error) {
+	u.ID = uuid.New()
+	return
+}

@@ -16,3 +16,8 @@ type Group struct {
 
 	gorm.Model
 }
+
+func (u *Group) BeforeCreate(tx *gorm.DB) (err error) {
+	u.ID = uuid.New()
+	return
+}

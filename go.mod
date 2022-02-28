@@ -10,6 +10,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.4.0
 	github.com/klauspost/compress v1.14.4 // indirect
+	github.com/mailgun/mailgun-go/v4 v4.6.0 // indirect
 	golang.org/x/crypto v0.0.0-20220210151621-f4118a5b28e2
 	golang.org/x/sys v0.0.0-20220224120231-95c6836cb0e7 // indirect
 	gopkg.in/ezzarghili/recaptcha-go.v4 v4.3.0 // indirect

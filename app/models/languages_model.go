@@ -12,3 +12,8 @@ type Language struct {
 
 	gorm.Model
 }
+
+func (u *Language) BeforeCreate(tx *gorm.DB) (err error) {
+	u.ID = uuid.New()
+	return
+}

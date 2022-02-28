@@ -1,12 +1,17 @@
 package account
 
 import (
+	"bytes"
+	"os"
 	"strings"
+	"text/template"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"myponyasia.com/hub-api/app/models"
 	"myponyasia.com/hub-api/pkg/database"
 	"myponyasia.com/hub-api/pkg/utils"
+	"myponyasia.com/hub-api/pkg/utils/hash"
 )
 
 type SignupPayload struct {
@@ -84,6 +89,35 @@ func Register(c *fiber.Ctx) error {
 	token, err := utils.GenerateNewAccessToken(user.ID.String())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	request_key := utils.RandomString(128, "alphanum") + "-" + hash.GetMD5Hash(user.ID.String())
+	var user_request = new(models.UserRequest)
+	user_request.UserID = user.ID
+	user_request.RequestType = "ACCOUNT_EMAIL_VERIFICATION"
+	user_request.Key = request_key
+	user_request.KeyHash = hash.GetMD5Hash(request_key)
+	user_request.ExpiredAt = time.Now().Add(time.Hour * 2)
+
+	if err := database.DB.Create(user_request).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	tmpl := template.Must(template.ParseFiles("./views/email/request-email-verify.html"))
+	email_data := TemplateEmail{
+		Username: user.Username,
+		Link:     os.Getenv("OAUTH_URL") + "?action=email-verification&redirect=signin&token=" + request_key + "&email=" + user.Email,
+	}
+	tmpl_buffer := new(bytes.Buffer)
+	tmpl.Execute(tmpl_buffer, email_data)
+	if err := utils.SendHTML(user.Email, "Email Verification", tmpl_buffer.String()); err != nil {
+		return c.Status(500).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
 		})

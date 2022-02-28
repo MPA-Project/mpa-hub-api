@@ -1,0 +1,312 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Email Verification</title>
+		<style>
+			body{
+				margin: 0;
+				font-family:Roboto-Regular,Helvetica,Arial,sans-serif;
+			}
+			.div-container{
+				margin:0;
+				padding:0;
+				background-color: #FFFFFF;
+			}
+			table.tbl-1{
+				min-width:348px;
+				width: 100%;
+				height: 100%;
+			}
+			table.tbl-2{
+				max-width:600px;
+			}
+			table.tbl-3{
+				width:100%;
+			}
+			table.tbl-4{
+				background-color: #039be5;
+				min-width:332px;
+				max-width:600px;
+				border:1px solid #f0f0f0;
+				border-bottom:0;
+				border-top-left-radius:8px;
+				border-top-right-radius:8px;
+			}
+			table.tbl-4 tbody tr td.table-title{
+				font-family:Roboto-Regular,Helvetica,Arial,sans-serif;
+				font-size:24px;
+				color:#ffffff;
+				line-height:1.25;
+				min-width:300px;
+			}
+			table.tbl-4 tbody tr td.table-title a.title-link{
+				text-decoration:none;
+				color:#ffffff;
+			}
+			table.tbl-5{
+				background-color: #FFFFFF;
+				min-width:332px;
+				max-width:600px;
+				border:1px solid #f0f0f0;
+				border-top:0;
+			}
+			table.tbl-6{
+				min-width:332px;
+				max-width:600px;
+				border:1px solid #f0f0f0;
+				border-bottom:1px solid #c0c0c0;
+				border-top:0;
+				border-bottom-left-radius:8px;
+				border-bottom-right-radius:8px;
+				background-color: #FAFAFA;
+			}
+			table.tbl-7{
+				min-width:300px;
+			}
+			table.tbl-7 tbody tr td.sub-title{
+				font-family:Roboto-Regular,Helvetica,Arial,sans-serif;
+				font-size:13px;
+				color:#202020;
+				line-height:1.5;
+				padding-bottom:4px;
+			}
+			table.tbl-7 tbody tr td.sub-content{
+				font-family:Roboto-Regular,Helvetica,Arial,sans-serif;
+				font-size:13px;
+				color:#202020;
+				line-height:1.5;
+				padding:4px 0;
+			}
+			table.tbl-7 tbody tr td.sub-created{
+				font-family:Roboto-Regular,Helvetica,Arial,sans-serif;
+				font-size:13px;
+				color:#202020;
+				line-height:1.5;
+				padding-top:28px;
+			}
+			table.tbl-8{
+				font-family:Roboto-Regular,Helvetica,Arial,sans-serif;
+				font-size:12px;
+				color:#b9b9b9;
+				line-height:1.5;
+			}
+			table.tbl-2 tbody tr td.tbl2-s1{
+				max-width:600px;
+				font-family:Roboto-Regular,Helvetica,Arial,sans-serif;
+				font-size:10px;
+				color:#bcbcbc;
+				line-height:1.5;
+			}
+			table.tbl-9{
+				font-family:Roboto-Regular,Helvetica,Arial,sans-serif;
+				font-size:10px;
+				color:#666666;
+				line-height:18px;
+				padding-bottom:10px;
+			}
+			table.tbl-9 tbody tr td div.hakcipta{
+				direction:ltr;
+				text-align:left;
+			}
+			.logo-area{
+				width: 32px;
+				height: 32px;
+				float: left;
+			}
+			.logo-text{
+				line-height: 32px;
+				margin-top: 2px;
+				margin-left: 5px;
+				float: left;
+				font-size:22px;
+				color:rgba(0,0,0,0.7);
+			}
+			.sub-content div.sub-button{
+				padding:24px 0 0 0;
+				line-height:16px;
+				text-align:right;
+			}
+			.sub-content div.sub-button div.sub-button-s1{
+				margin:0 0 16px 0;
+				text-align: center;
+			}
+			.sub-content div.sub-button div.sub-button-s1 span{
+				margin:0 0 0 8px;
+			}
+			.sub-content div.sub-button div.sub-button-s1 span a{
+				font-size:14px;
+				text-decoration:none;
+				text-transform:uppercase;
+				display:inline-block;
+				border-radius:2px;
+				padding:10px 20px;
+				background-color:#039be5;
+				color:#ffffff;
+				border-radius: 8px;
+			}
+			.layout-row {
+				-webkit-box-orient: horizontal;
+				-webkit-box-direction: normal;
+				-webkit-flex-direction: row;
+				flex-direction: row;
+			}
+			a{
+				color: #1a73e8;
+				text-decoration: none;
+			}
+			a:visited {
+				color: #1a73e8;
+			}
+			.mat-error {
+				color: #f44336;
+			}
+		</style>
+	</head>
+	<body>
+		<div bgcolor="#FFFFFF" class="div-container">
+			<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" class="tbl-1">
+				<tbody>
+					<tr height="32px"></tr>
+					<tr align="center">
+						<td width="32px"></td>
+						<td>
+							<table border="0" cellpadding="0" cellspacing="0" class="tbl-2">
+								<tbody>
+									<tr>
+										<td>
+											<table border="0" cellpadding="0" cellspacing="0" width="100%" class="tbl-3">
+												<tbody>
+													<tr>
+														<td align="left">
+															<div class="layout-row">
+																<div class="logo-area" title="Icon">
+																	<img title="logo" height="32" src="https://oauth.myponyasia.com/assets/images/logo_web.png" alt="logo">
+																</div>
+																<span class="logo-text">MPA Hub</span>
+															</div>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+									<tr height="16"></tr>
+									<tr>
+										<td>
+											<table border="0" cellpadding="0" cellspacing="0" width="100%" class="tbl-4">
+												<tbody>
+													<tr>
+														<td colspan="3" height="24px"></td>
+													</tr>
+													<tr>
+														<td width="32px"></td>
+														<td class="table-title">
+															<a class="title-link">Email Verification</a>
+														</td>
+														<td width="32px"></td>
+													</tr>
+													<tr>
+														<td colspan="3" height="18px"></td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<table class="tbl-5" border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tbody>
+													<tr>
+														<td colspan="3" height="18px"></td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<table class="tbl-6" border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tbody>
+													<tr height="16px">
+														<td rowspan="3" width="32px"></td>
+														<td></td>
+														<td rowspan="3" width="32px"></td>
+													</tr>
+													<tr>
+														<td>
+															<table border="0" cellpadding="0" cellspacing="0" class="tbl-7">
+																<tbody>
+																	<tr>
+																		<td class="sub-title">Hi {{ .Username }},</td>
+																	</tr>
+																	<tr>
+																		<td class="sub-content">
+																			<br>Please verify your email account with this link. This link is only valid for the next 2 hours.<br /><br />
+																			<div class="sub-button">
+																				<div class="sub-button-s1">
+																					<span>
+																						<a href="{{ .Link }}" target="_blank">CLICK TO VERIFY</a>
+																					</span>
+																				</div>
+																			</div>
+																			<br />
+																			<div>
+																				For manual link: <a href="{{ .Link }}" target="_blank">{{ .Link }}</a>
+																			</div>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td class="sub-created">MPA Hub team</td>
+																	</tr>
+																	<tr height="16px"></tr>
+																	<tr>
+																		<td>
+																			<table class="tbl-8">
+																				<tbody>
+																					<tr>
+																						<td>This email can't receive replies.</td>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</td>
+																	</tr>
+																</tbody>
+															</table>
+														</td>
+													</tr>
+													<tr height="32px"></tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+									<tr height="16"></tr>
+									<tr>
+										<td class="tbl2-s1"></td>
+									</tr>
+									<tr>
+										<td>
+											<table class="tbl-9">
+												<tbody>
+													<tr height="6px"></tr>
+													<tr>
+														<td>
+															<div class="hakcipta">MPA Project @2022 alright reserved.</div>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+						<td width="32px"></td>
+					</tr>
+					<tr height="32px"></tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>
