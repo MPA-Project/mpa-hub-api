@@ -127,7 +127,7 @@ func Register(c *fiber.Ctx) error {
 	tmpl := template.Must(template.ParseFiles("./views/email/request-email-verify.html"))
 	email_data := TemplateEmail{
 		Username: user.Username,
-		Link:     os.Getenv("OAUTH_URL") + "?action=email-verification&redirect=signin&token=" + request_key + "&email=" + user.Email,
+		Link:     os.Getenv("OAUTH_URL") + "?action=email-verification&redirect=signin&token=" + request_key + "&request=" + user.ID.String(),
 	}
 	tmpl_buffer := new(bytes.Buffer)
 	tmpl.Execute(tmpl_buffer, email_data)
