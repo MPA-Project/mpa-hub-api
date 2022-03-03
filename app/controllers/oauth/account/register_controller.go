@@ -98,7 +98,7 @@ func Register(c *fiber.Ctx) error {
 	request_key := utils.RandomString(128, "alphanum") + "-" + hash.GetMD5Hash(user.ID.String()) + "-" + uuid.New().String()
 
 	var user_request models.UserRequest
-	if err := database.DB.Where("user_id = ?", user.ID).Where("request_type = ?", "RESET_PASSWORD").Find(&user_request).Error; err != nil {
+	if err := database.DB.Where("user_id = ?", user.ID).Where("request_type = ?", "EMAIL_VERIFICATION").Find(&user_request).Error; err != nil {
 		user_request.UserID = user.ID
 		user_request.RequestType = "EMAIL_VERIFICATION"
 		user_request.Key = request_key
