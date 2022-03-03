@@ -97,7 +97,7 @@ func Register(c *fiber.Ctx) error {
 	request_key := utils.RandomString(128, "alphanum") + "-" + hash.GetMD5Hash(user.ID.String())
 	var user_request = new(models.UserRequest)
 	user_request.UserID = user.ID
-	user_request.RequestType = "ACCOUNT_EMAIL_VERIFICATION"
+	user_request.RequestType = "EMAIL_VERIFICATION"
 	user_request.Key = request_key
 	user_request.KeyHash = hash.GetMD5Hash(request_key)
 	user_request.ExpiredAt = time.Now().Add(time.Hour * 2)

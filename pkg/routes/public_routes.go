@@ -20,6 +20,7 @@ func PublicRoutes(app *fiber.App) {
 	routeOauth.Post("signin", account.Login)
 	routeOauth.Post("signup", account.Register)
 	routeOauth.Post("forgot-password", account.ForgotPassword)
+	routeOauth.Post("token-verify", account.RequestTokenVerify)
 
 	// route.Get("/token/new", controllers.GetNewAccessToken) // create a new access tokens
 }

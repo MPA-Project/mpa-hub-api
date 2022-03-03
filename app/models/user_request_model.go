@@ -10,7 +10,7 @@ import (
 type UserRequest struct {
 	ID          uuid.UUID `gorm:"primary_key,type:uuid"`
 	UserID      uuid.UUID `gorm:"type:varchar(255);not null;index"`
-	RequestType string    `gorm:"type:varchar(255);not null;"`
+	RequestType string    `gorm:"type:varchar(255);not null;index"`
 	Key         string    `gorm:"type:varchar(255);not null;"`
 	KeyHash     string    `gorm:"type:varchar(255);not null;index"`
 	ExpiredAt   time.Time `gorm:"not null;"`
