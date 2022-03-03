@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"myponyasia.com/hub-api/app/models"
 	"myponyasia.com/hub-api/pkg/database"
 	"myponyasia.com/hub-api/pkg/utils"
@@ -94,19 +95,33 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	request_key := utils.RandomString(128, "alphanum") + "-" + hash.GetMD5Hash(user.ID.String())
-	var user_request = new(models.UserRequest)
-	user_request.UserID = user.ID
-	user_request.RequestType = "EMAIL_VERIFICATION"
-	user_request.Key = request_key
-	user_request.KeyHash = hash.GetMD5Hash(request_key)
-	user_request.ExpiredAt = time.Now().Add(time.Hour * 2)
+	request_key := utils.RandomString(128, "alphanum") + "-" + hash.GetMD5Hash(user.ID.String()) + "-" + uuid.New().String()
 
-	if err := database.DB.Create(user_request).Error; err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"error":   true,
-			"message": err.Error(),
-		})
+	var user_request models.UserRequest
+	if err := database.DB.Where("user_id = ?", user.ID).Where("request_type = ?", "RESET_PASSWORD").Find(&user_request).Error; err != nil {
+		user_request.UserID = user.ID
+		user_request.RequestType = "EMAIL_VERIFICATION"
+		user_request.Key = request_key
+		user_request.KeyHash = hash.GetMD5Hash(request_key)
+		user_request.ExpiredAt = time.Now().Add(time.Hour * 2)
+
+		if err := database.DB.Create(user_request).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error":   true,
+				"message": err.Error(),
+			})
+		}
+	} else {
+		user_request.Key = request_key
+		user_request.KeyHash = hash.GetMD5Hash(request_key)
+		user_request.ExpiredAt = time.Now().Add(time.Hour * 2)
+
+		if err := database.DB.Save(user_request).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error":   true,
+				"message": err.Error(),
+			})
+		}
 	}
 
 	tmpl := template.Must(template.ParseFiles("./views/email/request-email-verify.html"))

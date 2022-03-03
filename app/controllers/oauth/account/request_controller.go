@@ -2,6 +2,7 @@ package account
 
 import (
 	"bytes"
+	"errors"
 	"os"
 	"text/template"
 	"time"
@@ -19,6 +20,7 @@ type TokenVerifyPayload struct {
 	Action    string `json:"action" validate:"required,lte=255"`
 	RequestID string `json:"requestId" validate:"required,lte=255"`
 	Token     string `json:"token" validate:"required"`
+	TokenKey  string `json:"tokenKey" validate:"required"`
 }
 
 type ForgotPasswordPayload struct {
@@ -27,15 +29,37 @@ type ForgotPasswordPayload struct {
 }
 
 type ForgotPasswordConfirmPayload struct {
-	Email           string `json:"email" validate:"required,lte=255"`
+	RequestID       string `json:"requestId" validate:"required,lte=255"`
 	Password        string `json:"password" validate:"required,lte=255"`
 	PasswordConfirm string `json:"passwordConfirm" validate:"required,lte=255"`
 	Token           string `json:"token" validate:"required"`
+	TokenKey        string `json:"tokenKey" validate:"required"`
+}
+
+type EmailVerificationPayload struct {
+	RequestID string `json:"requestId" validate:"required,lte=255"`
+	Token     string `json:"token" validate:"required"`
+	TokenKey  string `json:"tokenKey" validate:"required"`
 }
 
 type TemplateEmail struct {
 	Username string
 	Link     string
+}
+
+func tokenCheck(RequestID string, Action string, Token string) (models.UserRequest, error) {
+	var token_hash = hash.GetMD5Hash(Token)
+	var user_request models.UserRequest
+	err := database.DB.Where("user_id = ?", RequestID).Where("request_type = ?", Action).Where("key_hash = ?", token_hash).First(&user_request).Error
+	if err != nil {
+		return models.UserRequest{}, err
+	}
+
+	if user_request.ExpiredAt.Before(time.Now()) {
+		return models.UserRequest{}, errors.New("token expired")
+	}
+
+	return user_request, nil
 }
 
 func RequestTokenVerify(c *fiber.Ctx) error {
@@ -69,28 +93,16 @@ func RequestTokenVerify(c *fiber.Ctx) error {
 		})
 	}
 
-	var token_hash = hash.GetMD5Hash(payload.Token)
-
-	var user_request models.UserRequest
-	err := database.DB.Where("user_id = ?", payload.RequestID).Where("request_type = ?", payload.Action).Where("key_hash = ?", token_hash).First(&user_request).Error
-	if err != nil {
+	if _, err := tokenCheck(payload.RequestID, payload.Action, payload.TokenKey); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
 		})
 	}
 
-	if user_request.ExpiredAt.Before(time.Now()) {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   true,
-			"message": "Token expired",
-		})
-	}
-
 	return c.JSON(fiber.Map{
 		"error":   false,
 		"message": "Token valid",
-		"data":    nil,
 	})
 }
 
@@ -124,7 +136,6 @@ func ForgotPassword(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": "Account not found",
-			"data":    nil,
 		})
 	}
 
@@ -174,6 +185,143 @@ func ForgotPassword(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"error":   false,
 		"message": "Forgot password success",
-		"data":    nil,
+	})
+}
+
+func ForgotPasswordConfirm(c *fiber.Ctx) error {
+	payload := new(ForgotPasswordConfirmPayload)
+	if err := c.BodyParser(payload); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	validate := utils.NewValidator()
+	if err := validate.Struct(payload); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": utils.ValidatorErrors(err),
+		})
+	}
+
+	if payload.Password != payload.PasswordConfirm {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": "Passwords do not match",
+		})
+	}
+
+	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "forgot-password-confirm"); err != nil && !resultCaptcha {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	user_request, err := tokenCheck(payload.RequestID, "RESET_PASSWORD", payload.TokenKey)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	var user models.User
+	if err := database.DB.Find(&user, "id = ?", user_request.UserID).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": "User not found",
+		})
+	}
+
+	hash, errHash := hash.HashPassword(payload.Password)
+	if errHash != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": errHash.Error(),
+		})
+	}
+	user.Password = hash
+
+	if err := database.DB.Save(user).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	if err := database.DB.Delete(&user_request).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"error":   false,
+		"message": "Password changed",
+	})
+}
+
+func EmailVerification(c *fiber.Ctx) error {
+	payload := new(EmailVerificationPayload)
+	if err := c.BodyParser(payload); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	validate := utils.NewValidator()
+	if err := validate.Struct(payload); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": utils.ValidatorErrors(err),
+		})
+	}
+
+	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "email-verification"); err != nil && !resultCaptcha {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	user_request, err := tokenCheck(payload.RequestID, "EMAIL_VERIFICATION", payload.TokenKey)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	var user models.User
+	if err := database.DB.Find(&user, "id = ?", user_request.UserID).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": "User not found",
+		})
+	}
+	user.EmailVerify = true
+	user.EmailVerifyAt = time.Now()
+
+	if err := database.DB.Save(user).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	if err := database.DB.Delete(&user_request).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"error":   false,
+		"message": "Email verified",
 	})
 }
