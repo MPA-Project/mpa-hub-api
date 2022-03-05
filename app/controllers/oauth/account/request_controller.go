@@ -96,7 +96,7 @@ func RequestTokenVerify(c *fiber.Ctx) error {
 	if _, err := tokenCheck(payload.RequestID, payload.Action, payload.TokenKey); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
-			"message": err.Error(),
+			"message": "Token not found",
 		})
 	}
 
