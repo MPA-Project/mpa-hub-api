@@ -3,7 +3,6 @@ package account
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"os"
 	"text/template"
 	"time"
@@ -51,7 +50,7 @@ type TemplateEmail struct {
 func tokenCheck(RequestID string, Action string, Token string) (models.UserRequest, error) {
 	var token_hash = hash.GetMD5Hash(Token)
 	var user_request models.UserRequest
-	err := database.DB.Where("user_id = ?", RequestID).Where("request_type = ?", Action).Where("key_hash = ?", token_hash).First(&user_request).Error
+	err := database.DB.Where("id = ?", RequestID).Where("request_type = ?", Action).Where("key_hash = ?", token_hash).First(&user_request).Error
 	if err != nil {
 		return models.UserRequest{}, err
 	}
@@ -139,10 +138,6 @@ func ForgotPassword(c *fiber.Ctx) error {
 		})
 	}
 
-	fmt.Println("=========")
-	fmt.Println(user)
-	fmt.Println("=========")
-
 	request_key := utils.RandomString(128, "alphanum") + "-" + hash.GetMD5Hash(user.ID.String()) + "-" + uuid.New().String()
 
 	var user_request models.UserRequest
@@ -175,7 +170,7 @@ func ForgotPassword(c *fiber.Ctx) error {
 	tmpl := template.Must(template.ParseFiles("./views/email/request-reset-password.html"))
 	email_data := TemplateEmail{
 		Username: user.Username,
-		Link:     os.Getenv("OAUTH_URL") + "?action=reset-password&redirect=signin&token=" + request_key + "&request=" + user.ID.String(),
+		Link:     os.Getenv("OAUTH_URL") + "?action=reset-password&redirect=signin&token=" + request_key + "&request=" + user_request.ID.String(),
 	}
 	tmpl_buffer := new(bytes.Buffer)
 	tmpl.Execute(tmpl_buffer, email_data)
