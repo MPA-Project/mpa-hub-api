@@ -153,7 +153,7 @@ func ForgotPassword(c *fiber.Ctx) error {
 		user_request.KeyHash = hash.GetMD5Hash(request_key)
 		user_request.ExpiredAt = time.Now().Add(time.Hour * 2)
 
-		if err := database.DB.Create(user_request).Error; err != nil {
+		if err := database.DB.Create(&user_request).Error; err != nil {
 			return c.Status(500).JSON(fiber.Map{
 				"error":   true,
 				"message": err.Error(),
@@ -164,7 +164,7 @@ func ForgotPassword(c *fiber.Ctx) error {
 		user_request.KeyHash = hash.GetMD5Hash(request_key)
 		user_request.ExpiredAt = time.Now().Add(time.Hour * 2)
 
-		if err := database.DB.Save(user_request).Error; err != nil {
+		if err := database.DB.Save(&user_request).Error; err != nil {
 			return c.Status(500).JSON(fiber.Map{
 				"error":   true,
 				"message": err.Error(),
@@ -179,12 +179,8 @@ func ForgotPassword(c *fiber.Ctx) error {
 	}
 	tmpl_buffer := new(bytes.Buffer)
 	tmpl.Execute(tmpl_buffer, email_data)
-	if err := utils.SendHTML(user.Email, "Forgot Password", tmpl_buffer.String()); err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"error":   true,
-			"message": err.Error(),
-		})
-	}
+
+	go utils.SendHTML(user.Email, "Forgot Password", tmpl_buffer.String())
 
 	return c.JSON(fiber.Map{
 		"error":   false,
@@ -255,7 +251,7 @@ func ForgotPasswordConfirm(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := database.DB.Delete(&user_request).Error; err != nil {
+	if err := database.DB.Unscoped().Delete(&user_request).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
@@ -317,7 +313,7 @@ func EmailVerification(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := database.DB.Delete(&user_request).Error; err != nil {
+	if err := database.DB.Unscoped().Delete(&user_request).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
