@@ -238,6 +238,9 @@ func ForgotPasswordConfirm(c *fiber.Ctx) error {
 		})
 	}
 	user.Password = hash
+	if user.EmailVerifyAt.IsZero() {
+		user.EmailVerifyAt = time.Now()
+	}
 
 	if err := database.DB.Save(user).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{

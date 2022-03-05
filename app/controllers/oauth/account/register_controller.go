@@ -78,6 +78,7 @@ func Register(c *fiber.Ctx) error {
 	user.Email = payload.Email
 	user.Username = payload.Username
 	user.Password = payload.PasswordConfirm
+	user.EmailVerifyAt = time.Now()
 
 	if err := database.DB.Create(user).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{
