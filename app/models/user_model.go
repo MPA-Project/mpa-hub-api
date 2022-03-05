@@ -16,7 +16,7 @@ type User struct {
 	Role          string    `gorm:"type:varchar(255);not null;"`
 	SocialMedia   string    `json:"social_media" gorm:"type:text;null;"`
 	EmailVerify   bool      `gorm:"type:boolean;default:false;"`
-	EmailVerifyAt time.Time `gorm:"null"`
+	EmailVerifyAt time.Time `gorm:"default:null;null;"`
 	TFAEnable     bool      `gorm:"type:boolean;default:false;"`
 	TFAKey        string    `gorm:"type:varchar(255);null;"`
 	TFABackup     string    `gorm:"type:text;null;"`
