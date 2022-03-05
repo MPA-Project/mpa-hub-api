@@ -3,6 +3,7 @@ package account
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"text/template"
 	"time"
@@ -79,7 +80,7 @@ func RequestTokenVerify(c *fiber.Ctx) error {
 		})
 	}
 
-	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "token-verify"); err != nil && !resultCaptcha {
+	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "token_verify"); err != nil && !resultCaptcha {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
@@ -123,7 +124,7 @@ func ForgotPassword(c *fiber.Ctx) error {
 		})
 	}
 
-	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "forgot-password"); err != nil && !resultCaptcha {
+	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "forgot_password"); err != nil && !resultCaptcha {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
@@ -131,18 +132,21 @@ func ForgotPassword(c *fiber.Ctx) error {
 	}
 
 	var user models.User
-	err := database.DB.Find(&user, "email = ?", payload.Email).Error
-	if err != nil {
+	if err := database.DB.First(&user, "email = ?", payload.Email).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": "Account not found",
 		})
 	}
 
+	fmt.Println("=========")
+	fmt.Println(user)
+	fmt.Println("=========")
+
 	request_key := utils.RandomString(128, "alphanum") + "-" + hash.GetMD5Hash(user.ID.String()) + "-" + uuid.New().String()
 
 	var user_request models.UserRequest
-	if err := database.DB.Where("user_id = ?", user.ID).Where("request_type = ?", "RESET_PASSWORD").Find(&user_request).Error; err != nil {
+	if err := database.DB.Where("user_id = ?", user.ID).Where("request_type = ?", "RESET_PASSWORD").First(&user_request).Error; err != nil {
 		user_request.UserID = user.ID
 		user_request.RequestType = "RESET_PASSWORD"
 		user_request.Key = request_key
@@ -212,7 +216,7 @@ func ForgotPasswordConfirm(c *fiber.Ctx) error {
 		})
 	}
 
-	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "forgot-password-confirm"); err != nil && !resultCaptcha {
+	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "forgot_password_confirm"); err != nil && !resultCaptcha {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
@@ -228,7 +232,7 @@ func ForgotPasswordConfirm(c *fiber.Ctx) error {
 	}
 
 	var user models.User
-	if err := database.DB.Find(&user, "id = ?", user_request.UserID).Error; err != nil {
+	if err := database.DB.First(&user, "id = ?", user_request.UserID).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": "User not found",
@@ -281,7 +285,7 @@ func EmailVerification(c *fiber.Ctx) error {
 		})
 	}
 
-	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "email-verification"); err != nil && !resultCaptcha {
+	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "email_verification"); err != nil && !resultCaptcha {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
@@ -297,7 +301,7 @@ func EmailVerification(c *fiber.Ctx) error {
 	}
 
 	var user models.User
-	if err := database.DB.Find(&user, "id = ?", user_request.UserID).Error; err != nil {
+	if err := database.DB.First(&user, "id = ?", user_request.UserID).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": "User not found",

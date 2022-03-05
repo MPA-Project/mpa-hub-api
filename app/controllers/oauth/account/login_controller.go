@@ -39,7 +39,7 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	var userEmail models.User
-	err := database.DB.Find(&userEmail, "email = ?", payload.Email).Error
+	err := database.DB.First(&userEmail, "email = ?", payload.Email).Error
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
