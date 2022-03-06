@@ -16,9 +16,10 @@ import (
 func FiberMiddleware(a *fiber.App) {
 	a.Use(
 		// Add CORS to each route.
-		cors.New(cors.Config{
-			AllowOrigins: "http://localhost:4200, https://oauth.myponyasia.com, https://myponyasia.com, https://oauth-tester.myponyasia.com",
-		}),
+		// cors.New(cors.Config{
+		// 	AllowOrigins: "http://localhost:4200, https://oauth.myponyasia.com, https://myponyasia.com, https://oauth-tester.myponyasia.com",
+		// }),
+		cors.New(),
 
 		// Add simple logger.
 		logger.New(),
