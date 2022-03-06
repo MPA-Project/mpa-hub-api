@@ -75,7 +75,7 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	var user models.User
+	var user = new(models.User)
 	user.Email = payload.Email
 	user.Username = payload.Username
 	user.Password = payload.PasswordConfirm
@@ -88,7 +88,7 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	at_token, rt_token, err := authorization.GenerateNewAccessToken(user)
+	at_token, rt_token, err := authorization.GenerateNewAccessToken(*user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error":   true,
