@@ -74,7 +74,7 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	var user = new(models.User)
+	var user models.User
 	user.Email = payload.Email
 	user.Username = payload.Username
 	user.Password = payload.PasswordConfirm
@@ -87,7 +87,7 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	token, err := utils.GenerateNewAccessToken(user.ID.String())
+	at_token, rt_token, err := utils.GenerateNewAccessToken(user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error":   true,
@@ -136,6 +136,9 @@ func Register(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"error":   false,
 		"message": "Signup success",
-		"data":    token,
+		"data": fiber.Map{
+			"access_token":  at_token,
+			"refresh_token": rt_token,
+		},
 	})
 }

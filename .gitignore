@@ -8,6 +8,10 @@ tmp/
 # Test
 *.out
 
+# RSA Key
+jwtRS256.key
+jwtRS256.key.pub
+
 # Environment variables
 .env
 .env.server

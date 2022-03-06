@@ -44,7 +44,6 @@ func Login(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": "Credentials inccorect",
-			"data":    nil,
 		})
 	}
 
@@ -52,11 +51,10 @@ func Login(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 			"error":   true,
 			"message": "Credentials inccorect",
-			"data":    nil,
 		})
 	}
 
-	token, err := utils.GenerateNewAccessToken(userEmail.ID.String())
+	at_token, rt_token, err := utils.GenerateNewAccessToken(userEmail)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error":   true,
@@ -67,6 +65,9 @@ func Login(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"error":   false,
 		"message": "Signin success",
-		"data":    token,
+		"data": fiber.Map{
+			"access_token":  at_token,
+			"refresh_token": rt_token,
+		},
 	})
 }
