@@ -137,8 +137,10 @@ func Register(c *fiber.Ctx) error {
 		"error":   false,
 		"message": "Signup success",
 		"data": fiber.Map{
-			"access_token":  at_token,
-			"refresh_token": rt_token,
+			"access_token":          at_token,
+			"acces_token_expired":   time.Now().Add(15 * time.Minute),
+			"refresh_token":         rt_token,
+			"refresh_token_expired": time.Now().Add(365 * (24 * time.Hour)),
 		},
 	})
 }

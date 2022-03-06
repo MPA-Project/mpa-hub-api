@@ -80,7 +80,7 @@ func GenerateNewAccessToken(user models.User) (string, string, error) {
 	rtClaims["aud"] = "myponyasia.com"
 	rtClaims["iat"] = time.Now().Unix()
 	rtClaims["nbf"] = time.Now().Unix()
-	rtClaims["exp"] = time.Now().Add(time.Minute * time.Duration(rtExpired)).Unix()
+	rtClaims["exp"] = time.Now().Add((time.Hour * 24) * time.Duration(rtExpired)).Unix()
 	rtClaims["uuid"] = user.ID.String()
 
 	// Create a new JWT refresh token with claims.
