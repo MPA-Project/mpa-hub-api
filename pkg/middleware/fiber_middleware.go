@@ -16,16 +16,18 @@ import (
 func FiberMiddleware(a *fiber.App) {
 	a.Use(
 		// Add CORS to each route.
-		cors.New(),
+		cors.New(cors.Config{
+			AllowOrigins: "http://localhost:4200, https://oauth.myponyasia.com, https://myponyasia.com",
+		}),
 
 		// Add simple logger.
 		logger.New(),
 
 		// Rate limiter
 		limiter.New(limiter.Config{
-			Next: func(c *fiber.Ctx) bool {
-				return c.IP() == "127.0.0.1"
-			},
+			// Next: func(c *fiber.Ctx) bool {
+			// 	return c.IP() == "127.0.0.1"
+			// },
 			Max:        60,
 			Expiration: 60 * time.Second,
 			LimitReached: func(c *fiber.Ctx) error {
