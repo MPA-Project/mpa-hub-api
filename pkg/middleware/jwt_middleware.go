@@ -1,24 +1,79 @@
 package middleware
 
 import (
-	"os"
-
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v4"
+	"myponyasia.com/hub-api/pkg/utils/authorization"
 
 	jwtMiddleware "github.com/gofiber/jwt/v2"
 )
 
 // JWTProtected func for specify routes group with JWT authentication.
 // See: https://github.com/gofiber/jwt
-func JWTProtected() func(*fiber.Ctx) error {
+func JWTSessionProtected() func(*fiber.Ctx) error {
+
+	key, err := jwt.ParseRSAPublicKeyFromPEM(authorization.PublicKey)
+	if err != nil {
+		return nil
+	}
+
 	// Create config for JWT authentication middleware.
 	config := jwtMiddleware.Config{
-		SigningKey:   []byte(os.Getenv("JWT_SECRET_KEY")),
-		ContextKey:   "jwt", // used in private routes
-		ErrorHandler: jwtError,
+		SigningMethod:  "RS256",
+		SigningKey:     key,
+		ContextKey:     "jwt",
+		ErrorHandler:   jwtError,
+		SuccessHandler: jwtSessionSuccess,
 	}
 
 	return jwtMiddleware.New(config)
+}
+
+func JWTRefreshProtected() func(*fiber.Ctx) error {
+
+	key, err := jwt.ParseRSAPublicKeyFromPEM(authorization.PublicKey)
+	if err != nil {
+		return nil
+	}
+
+	// Create config for JWT authentication middleware.
+	config := jwtMiddleware.Config{
+		SigningMethod:  "RS256",
+		SigningKey:     key,
+		ContextKey:     "jwt",
+		ErrorHandler:   jwtError,
+		SuccessHandler: jwtRefreshSuccess,
+	}
+
+	return jwtMiddleware.New(config)
+}
+
+func jwtSessionSuccess(c *fiber.Ctx) error {
+	jwtClaims := c.Locals("jwt").(*jwt.Token)
+	claims := jwtClaims.Claims.(jwt.MapClaims)
+
+	if typ := claims["typ"].(string); typ != "session" {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": true,
+			"msg":   "Invalid token type",
+		})
+	}
+
+	return c.Next()
+}
+
+func jwtRefreshSuccess(c *fiber.Ctx) error {
+	jwtClaims := c.Locals("jwt").(*jwt.Token)
+	claims := jwtClaims.Claims.(jwt.MapClaims)
+
+	if typ := claims["typ"].(string); typ != "refresh" {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": true,
+			"msg":   "Invalid token type",
+		})
+	}
+
+	return c.Next()
 }
 
 func jwtError(c *fiber.Ctx, err error) error {

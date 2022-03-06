@@ -7,6 +7,7 @@ import (
 	"myponyasia.com/hub-api/app/models"
 	"myponyasia.com/hub-api/pkg/database"
 	"myponyasia.com/hub-api/pkg/utils"
+	"myponyasia.com/hub-api/pkg/utils/authorization"
 	"myponyasia.com/hub-api/pkg/utils/hash"
 )
 
@@ -56,7 +57,7 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	at_token, rt_token, err := utils.GenerateNewAccessToken(userEmail)
+	at_token, rt_token, err := authorization.GenerateNewAccessToken(userEmail)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error":   true,
