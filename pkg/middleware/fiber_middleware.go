@@ -33,8 +33,8 @@ func FiberMiddleware(a *fiber.App) {
 			Expiration: 60 * time.Second,
 			LimitReached: func(c *fiber.Ctx) error {
 				return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
-					"error": true,
-					"msg":   "Too Many Requests",
+					"error":   true,
+					"message": "Too Many Requests",
 				})
 			},
 		}),

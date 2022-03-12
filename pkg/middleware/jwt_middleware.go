@@ -54,8 +54,8 @@ func jwtSessionSuccess(c *fiber.Ctx) error {
 
 	if typ := claims["typ"].(string); typ != "session" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": true,
-			"msg":   "Invalid token type",
+			"error":   true,
+			"message": "Invalid token type",
 		})
 	}
 
@@ -68,8 +68,8 @@ func jwtRefreshSuccess(c *fiber.Ctx) error {
 
 	if typ := claims["typ"].(string); typ != "refresh" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": true,
-			"msg":   "Invalid token type",
+			"error":   true,
+			"message": "Invalid token type",
 		})
 	}
 
@@ -80,14 +80,14 @@ func jwtError(c *fiber.Ctx, err error) error {
 	// Return status 401 and failed authentication error.
 	if err.Error() == "Missing or malformed JWT" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
+			"error":   true,
+			"message": err.Error(),
 		})
 	}
 
 	// Return status 401 and failed authentication error.
 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-		"error": true,
-		"msg":   err.Error(),
+		"error":   true,
+		"message": err.Error(),
 	})
 }

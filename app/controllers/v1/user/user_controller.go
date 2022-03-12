@@ -22,8 +22,8 @@ func Me(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"error": false,
-		"msg":   "OK",
+		"error":   false,
+		"message": "OK",
 		"data": fiber.Map{
 			"id":    user.ID.String(),
 			"name":  user.Username,

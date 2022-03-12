@@ -9,12 +9,6 @@ import (
 // PublicRoutes func for describe group of public routes.
 func PublicRoutes(app *fiber.App) {
 
-	// Group V1 routes
-	// routeV1 := app.Group("/v1")
-	// routeV1.Get("/users", v1.GetUsers) // Get all users
-	// routeV1.Get("/user/:userId", v1.GetUser) // get one user by ID
-	// routeV1.Post("/user", v1.CreateUser)     // create a new user
-
 	// Group oauth routes
 	routeOauth := app.Group("/oauth")
 	routeOauth.Post("signin", account.Login)
@@ -23,6 +17,4 @@ func PublicRoutes(app *fiber.App) {
 	routeOauth.Post("forgot-password", account.ForgotPassword)
 	routeOauth.Post("forgot-password-confirm", account.ForgotPasswordConfirm)
 	routeOauth.Post("email-verification", account.EmailVerification)
-
-	// route.Get("/token/new", controllers.GetNewAccessToken) // create a new access tokens
 }

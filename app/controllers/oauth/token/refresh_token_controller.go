@@ -16,8 +16,8 @@ func RegenerateAccessToken(c *fiber.Ctx) error {
 
 	if typ := claims["typ"].(string); typ != "refresh" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": true,
-			"msg":   "Invalid token type",
+			"error":   true,
+			"message": "Invalid token type",
 		})
 	}
 
@@ -40,8 +40,8 @@ func RegenerateAccessToken(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"error": false,
-		"msg":   "OK",
+		"error":   false,
+		"message": "OK",
 		// "context": c.Locals("jwt"),
 		// "claim":   claims,
 		"data": fiber.Map{

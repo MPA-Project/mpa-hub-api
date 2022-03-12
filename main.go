@@ -12,6 +12,9 @@ import (
 )
 
 func main() {
+	// Remove temporary files after 2 hours
+	go utils.RemoveExpiredFiles()
+
 	// Define Fiber config.
 	config := configs.FiberConfig()
 
