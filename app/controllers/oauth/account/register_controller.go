@@ -48,11 +48,14 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "signup"); err != nil && !resultCaptcha {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   true,
-			"message": err.Error(),
-		})
+	recaptcha_disabled := os.Getenv("RECAPTCHA_DISABLED")
+	if recaptcha_disabled != "true" {
+		if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "signup"); err != nil && !resultCaptcha {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":   true,
+				"message": err.Error(),
+			})
+		}
 	}
 
 	var countUserEmail int64

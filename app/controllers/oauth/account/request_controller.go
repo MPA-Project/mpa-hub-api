@@ -79,11 +79,14 @@ func RequestTokenVerify(c *fiber.Ctx) error {
 		})
 	}
 
-	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "token_verify"); err != nil && !resultCaptcha {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   true,
-			"message": err.Error(),
-		})
+	recaptcha_disabled := os.Getenv("RECAPTCHA_DISABLED")
+	if recaptcha_disabled != "true" {
+		if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "token_verify"); err != nil && !resultCaptcha {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":   true,
+				"message": err.Error(),
+			})
+		}
 	}
 
 	if !utils.EnumContains(enums.RequestEnum(), payload.Action) {
@@ -123,11 +126,14 @@ func ForgotPassword(c *fiber.Ctx) error {
 		})
 	}
 
-	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "forgot_password"); err != nil && !resultCaptcha {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   true,
-			"message": err.Error(),
-		})
+	recaptcha_disabled := os.Getenv("RECAPTCHA_DISABLED")
+	if recaptcha_disabled != "true" {
+		if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "forgot_password"); err != nil && !resultCaptcha {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":   true,
+				"message": err.Error(),
+			})
+		}
 	}
 
 	var user models.User
@@ -207,11 +213,14 @@ func ForgotPasswordConfirm(c *fiber.Ctx) error {
 		})
 	}
 
-	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "forgot_password_confirm"); err != nil && !resultCaptcha {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   true,
-			"message": err.Error(),
-		})
+	recaptcha_disabled := os.Getenv("RECAPTCHA_DISABLED")
+	if recaptcha_disabled != "true" {
+		if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "forgot_password_confirm"); err != nil && !resultCaptcha {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":   true,
+				"message": err.Error(),
+			})
+		}
 	}
 
 	user_request, err := tokenCheck(payload.RequestID, "RESET_PASSWORD", payload.TokenKey)
@@ -279,11 +288,14 @@ func EmailVerification(c *fiber.Ctx) error {
 		})
 	}
 
-	if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "email_verification"); err != nil && !resultCaptcha {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   true,
-			"message": err.Error(),
-		})
+	recaptcha_disabled := os.Getenv("RECAPTCHA_DISABLED")
+	if recaptcha_disabled != "true" {
+		if resultCaptcha, err := utils.CaptchaVerifyToken(payload.Token, "email_verification"); err != nil && !resultCaptcha {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":   true,
+				"message": err.Error(),
+			})
+		}
 	}
 
 	user_request, err := tokenCheck(payload.RequestID, "EMAIL_VERIFICATION", payload.TokenKey)

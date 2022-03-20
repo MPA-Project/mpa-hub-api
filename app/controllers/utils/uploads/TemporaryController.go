@@ -36,14 +36,6 @@ func UploadTemporary(c *fiber.Ctx) error {
 
 	c.SaveFile(file, modified_filename)
 
-	info, err := os.Stat(modified_filename)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error":   true,
-			"message": err.Error(),
-		})
-	}
-
 	buffer, err := bimg.Read(modified_filename)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -88,9 +80,10 @@ func UploadTemporary(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-		"error":    false,
-		"message":  "OK",
-		"fileInfo": file,
-		"info":     info,
+		"error":   false,
+		"message": "OK",
+		"data": fiber.Map{
+			"filename": modified_filename,
+		},
 	})
 }
