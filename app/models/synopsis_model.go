@@ -6,9 +6,12 @@ import (
 )
 
 type Synopsis struct {
-	ID           uuid.UUID `gorm:"primary_key,type:uuid"`
-	LanguageCode string    `json:"code" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
-	Synopsis     string    `json:"synopsis" validate:"required" gorm:"type:text;not null;"`
+	ID uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
+
+	LanguageID uuid.UUID `gorm:"type:uuid;null;size:36;"`
+	Language   Language  `gorm:"foreignkey:LanguageID;"`
+
+	Synop string `json:"synopsis" validate:"required" gorm:"type:text;null;"`
 
 	gorm.Model
 }

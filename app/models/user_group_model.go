@@ -6,10 +6,15 @@ import (
 )
 
 type UserGroup struct {
-	ID      uuid.UUID `gorm:"primary_key,type:uuid"`
-	UserID  uuid.UUID `gorm:"type:varchar(255);not null;"`
-	GroupID uuid.UUID `gorm:"type:varchar(255);not null;"`
-	Role    string    `gorm:"type:varchar(255);not null;"`
+	ID uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
+
+	UserID uuid.UUID `gorm:"type:uuid;not null;size:36;"`
+	User   User      `gorm:"foreignkey:UserID"`
+
+	GroupID uuid.UUID `gorm:"type:uuid;not null;size:36;"`
+	Group   Group     `gorm:"foreignkey:GroupID"`
+
+	Role string `gorm:"type:varchar(255);not null;"`
 
 	gorm.Model
 }

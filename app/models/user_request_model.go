@@ -8,11 +8,14 @@ import (
 )
 
 type UserRequest struct {
-	ID          uuid.UUID `gorm:"primary_key,type:uuid"`
-	UserID      uuid.UUID `gorm:"type:varchar(255);not null;index"`
-	RequestType string    `gorm:"type:varchar(255);not null;index"`
+	ID uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
+
+	UserID uuid.UUID `gorm:"type:uuid;null;size:36;"`
+	User   User      `gorm:"foreignkey:UserID"`
+
+	RequestType string    `gorm:"type:varchar(255);not null;index;"`
 	Key         string    `gorm:"type:varchar(255);not null;"`
-	KeyHash     string    `gorm:"type:varchar(255);not null;index"`
+	KeyHash     string    `gorm:"type:varchar(32);size:32;not null;index;"`
 	ExpiredAt   time.Time `gorm:"not null;"`
 
 	gorm.Model

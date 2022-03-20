@@ -52,12 +52,23 @@ func ConnectDB() {
 
 	// Migrate the database
 	DB.AutoMigrate(
+
+		// Base User
 		&models.User{},
+		&models.UserRoles{},
+		&models.Role{},
+		&models.UserRequest{},
 		&models.Group{},
 		&models.UserGroup{},
+		&models.Permission{},
+		&models.RolePermissions{},
+
+		// Base Data
 		&models.Language{},
 		&models.Synopsis{},
-		&models.UserRequest{},
+
+		// Series
+		&models.Series{},
 	)
 	fmt.Println("Database Migrated")
 }

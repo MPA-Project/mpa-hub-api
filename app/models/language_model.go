@@ -6,8 +6,8 @@ import (
 )
 
 type Language struct {
-	ID       uuid.UUID `gorm:"primary_key,type:uuid"`
-	Code     string    `json:"code" validate:"required,lte=255" gorm:"index;type:varchar(255);not null;"`
+	ID       uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
+	Code     string    `json:"code" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
 	Language string    `json:"name" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
 
 	gorm.Model

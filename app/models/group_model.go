@@ -6,7 +6,7 @@ import (
 )
 
 type Group struct {
-	ID            uuid.UUID `gorm:"primary_key,type:uuid"`
+	ID            uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
 	Username      string    `json:"username" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
 	SocialMedia   string    `json:"social_media" gorm:"type:text;null;"`
 	Description   string    `json:"description" gorm:"type:text;null;"`
