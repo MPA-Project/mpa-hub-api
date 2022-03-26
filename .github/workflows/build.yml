@@ -22,5 +22,10 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
 
+      - name: Build libvips
+        run: |
+          chmod +x ./preinstall.sh
+          ./preinstall.sh
+
       - name: Build
         run: go build
