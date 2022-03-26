@@ -24,8 +24,8 @@ jobs:
 
       - name: Build libvips
         run: |
-          chmod +x ./preinstall.sh
-          ./preinstall.sh
+          sudo chmod +x ./preinstall.sh
+          sudo ./preinstall.sh
 
       - name: Build
         run: go build
