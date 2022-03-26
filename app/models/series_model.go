@@ -11,10 +11,11 @@ type Series struct {
 	ID        uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
 	Title     string    `json:"title" validate:"required,lte=255" gorm:"type:varchar(512);not null;"`
 	TitleHash string    `gorm:"type:varchar(32);size:32;not null;index"`
+	Type      string    `gorm:"type:varchar(255);not null;comment:Watchable | Readable;"`
 	Status    int       `gorm:"index;type:tinyint;size(1);UNSIGNED;null;"`
 
 	UserID uuid.UUID `gorm:"index;type:uuid;null;size:36;"`
-	User   User      `gorm:"foreignkey:UserID"`
+	User   User      `gorm:"foreignkey:UserID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 
 	gorm.Model
 }

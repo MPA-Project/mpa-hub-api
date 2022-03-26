@@ -9,10 +9,10 @@ type UserRoles struct {
 	ID uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
 
 	UserID uuid.UUID `gorm:"type:uuid;null;size:36;"`
-	User   User      `gorm:"foreignkey:UserID"`
+	User   User      `gorm:"foreignkey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
 	RoleID uuid.UUID `gorm:"type:uuid;null;size:36;"`
-	Role   Role      `gorm:"foreignkey:RoleID"`
+	Role   Role      `gorm:"foreignkey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
 	gorm.Model
 }

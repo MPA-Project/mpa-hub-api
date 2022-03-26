@@ -69,6 +69,10 @@ func ConnectDB() {
 
 		// Series
 		&models.Series{},
+		&models.Author{},
+		&models.Artist{},
+		&models.SeriesArtist{},
+		&models.SeriesAuthor{},
 	)
 	fmt.Println("Database Migrated")
 }

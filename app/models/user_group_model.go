@@ -9,10 +9,10 @@ type UserGroup struct {
 	ID uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
 
 	UserID uuid.UUID `gorm:"type:uuid;not null;size:36;"`
-	User   User      `gorm:"foreignkey:UserID"`
+	User   User      `gorm:"foreignkey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
 	GroupID uuid.UUID `gorm:"type:uuid;not null;size:36;"`
-	Group   Group     `gorm:"foreignkey:GroupID"`
+	Group   Group     `gorm:"foreignkey:GroupID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
 	Role string `gorm:"type:varchar(255);not null;"`
 

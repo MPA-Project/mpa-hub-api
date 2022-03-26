@@ -11,7 +11,7 @@ type UserRequest struct {
 	ID uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
 
 	UserID uuid.UUID `gorm:"type:uuid;null;size:36;"`
-	User   User      `gorm:"foreignkey:UserID"`
+	User   User      `gorm:"foreignkey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
 	RequestType string    `gorm:"type:varchar(255);not null;index;"`
 	Key         string    `gorm:"type:varchar(255);not null;"`
