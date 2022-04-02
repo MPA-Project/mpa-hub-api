@@ -28,7 +28,6 @@ func Me(c *fiber.Ctx) error {
 			"id":    user.ID.String(),
 			"name":  user.Username,
 			"email": user.Email,
-			"role":  user.Role,
 		},
 	})
 }

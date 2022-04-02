@@ -10,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"myponyasia.com/hub-api/app/models"
+	"myponyasia.com/hub-api/app/services/roles"
 	"myponyasia.com/hub-api/pkg/database"
 	"myponyasia.com/hub-api/pkg/utils"
 	"myponyasia.com/hub-api/pkg/utils/authorization"
@@ -68,6 +69,7 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	payload.Username = strings.ToLower(payload.Username)
+	payload.Email = strings.ToLower(payload.Email)
 
 	var countUserUsername int64
 	database.DB.Model(&models.User{}).Where("username = ?", payload.Username).Count(&countUserUsername)
@@ -101,7 +103,7 @@ func Register(c *fiber.Ctx) error {
 
 	request_key := utils.RandomString(128, "alphanum") + "-" + hash.GetMD5Hash(user.ID.String()) + "-" + uuid.New().String()
 
-	var user_request models.UserRequest
+	var user_request models.UserTicket
 	if err := database.DB.Where("user_id = ?", user.ID).Where("request_type = ?", "EMAIL_VERIFICATION").First(&user_request).Error; err != nil {
 		user_request.UserID = user.ID
 		user_request.RequestType = "EMAIL_VERIFICATION"
@@ -126,6 +128,24 @@ func Register(c *fiber.Ctx) error {
 				"message": err.Error(),
 			})
 		}
+	}
+
+	role, err := roles.FindRolesByName("USER")
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   true,
+			"message": "Sorry, default user not found",
+		})
+	}
+
+	var user_role models.UserRoles
+	user_role.UserID = user.ID
+	user_role.RoleID = role.ID
+	if err := database.DB.Save(&user_role).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
 	}
 
 	tmpl := template.Must(template.ParseFiles("./views/email/request-email-verify.html"))

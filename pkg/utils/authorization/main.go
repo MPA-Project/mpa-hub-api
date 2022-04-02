@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"myponyasia.com/hub-api/app/models"
+	"myponyasia.com/hub-api/app/services/roles"
 )
 
 type RefreshTokenClaims struct {
@@ -46,6 +47,17 @@ func GenerateNewAccessToken(user models.User) (string, string, error) {
 	atExpired, _ := strconv.Atoi(os.Getenv("JWT_ACCESS_TOKEN_EXPIRED"))
 	rtExpired, _ := strconv.Atoi(os.Getenv("JWT_REFRESH_TOKEN_EXPIRED"))
 
+	userRoles, err := roles.FindRolesByUserId(user)
+	if err != nil {
+		return "", "", err
+	}
+
+	// Create a roles name
+	var roles []string
+	for _, v := range userRoles {
+		roles = append(roles, v.Role.Name)
+	}
+
 	// Create a new access token claims.
 	atClaims := jwt.MapClaims{
 		"typ":  "session",
@@ -56,9 +68,7 @@ func GenerateNewAccessToken(user models.User) (string, string, error) {
 		"exp":  time.Now().Add(time.Minute * time.Duration(atExpired)).Unix(),
 		"uuid": user.ID.String(),
 		"data": fiber.Map{
-			"roles": []string{
-				user.Role,
-			},
+			"roles":       roles,
 			"permissions": []string{},
 		},
 	}

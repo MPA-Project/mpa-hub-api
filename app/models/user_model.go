@@ -9,12 +9,15 @@ import (
 )
 
 type User struct {
-	ID            uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
-	Username      string    `json:"username" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
-	Email         string    `json:"email" validate:"required,lte=255" gorm:"unique;type:varchar(255);not null;"`
-	Password      string    `json:"password" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
-	Role          string    `gorm:"type:varchar(255);not null;"`
-	SocialMedia   string    `json:"social_media" gorm:"type:text;null;"`
+	ID               uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
+	Username         string    `json:"username" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
+	Email            string    `json:"email" validate:"required,lte=255" gorm:"unique;type:varchar(255);not null;"`
+	Password         string    `json:"password" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
+	ExternalLink     string    `json:"externalLink" gorm:"type:text;null;"`
+	DonateLink       string    `json:"donateLink" gorm:"type:text;null;"`
+	Avatar           string    `json:"avatar" gorm:"type:text;null;"`
+	AvatarBackground string    `json:"avatarBackground" gorm:"type:text;null;"`
+
 	EmailVerify   bool      `gorm:"type:boolean;default:false;"`
 	EmailVerifyAt time.Time `gorm:"default:null;null;"`
 	TFAEnable     bool      `gorm:"type:boolean;default:false;"`
@@ -32,8 +35,6 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 		return errHash
 	}
 	u.Password = hash
-
-	u.Role = "USER"
 
 	u.EmailVerify = false
 	u.TFAEnable = false

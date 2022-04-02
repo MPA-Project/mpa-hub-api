@@ -5,14 +5,14 @@ import (
 	"gorm.io/gorm"
 )
 
-type Artist struct {
+type Genre struct {
 	ID   uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
-	Name string    `json:"name" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
+	Name string    `json:"name" validate:"required,lte=255" gorm:"type:varchar(512);not null;"`
 
 	gorm.Model
 }
 
-func (u *Artist) BeforeCreate(tx *gorm.DB) (err error) {
+func (u *Genre) BeforeCreate(tx *gorm.DB) (err error) {
 	u.ID = uuid.New()
 	return
 }

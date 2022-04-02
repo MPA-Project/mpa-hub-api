@@ -47,16 +47,16 @@ type TemplateEmail struct {
 	Link     string
 }
 
-func tokenCheck(RequestID string, Action string, Token string) (models.UserRequest, error) {
+func tokenCheck(RequestID string, Action string, Token string) (models.UserTicket, error) {
 	var token_hash = hash.GetMD5Hash(Token)
-	var user_request models.UserRequest
+	var user_request models.UserTicket
 	err := database.DB.Where("id = ?", RequestID).Where("request_type = ?", Action).Where("key_hash = ?", token_hash).First(&user_request).Error
 	if err != nil {
-		return models.UserRequest{}, err
+		return models.UserTicket{}, err
 	}
 
 	if user_request.ExpiredAt.Before(time.Now()) {
-		return models.UserRequest{}, errors.New("token expired")
+		return models.UserTicket{}, errors.New("token expired")
 	}
 
 	return user_request, nil
@@ -146,7 +146,7 @@ func ForgotPassword(c *fiber.Ctx) error {
 
 	request_key := utils.RandomString(128, "alphanum") + "-" + hash.GetMD5Hash(user.ID.String()) + "-" + uuid.New().String()
 
-	var user_request models.UserRequest
+	var user_request models.UserTicket
 	if err := database.DB.Where("user_id = ?", user.ID).Where("request_type = ?", "RESET_PASSWORD").First(&user_request).Error; err != nil {
 		user_request.UserID = user.ID
 		user_request.RequestType = "RESET_PASSWORD"

@@ -57,7 +57,7 @@ func ConnectDB() {
 		&models.User{},
 		&models.UserRoles{},
 		&models.Role{},
-		&models.UserRequest{},
+		&models.UserTicket{},
 		&models.Group{},
 		&models.UserGroup{},
 		&models.Permission{},
@@ -65,14 +65,24 @@ func ConnectDB() {
 
 		// Base Data
 		&models.Language{},
-		&models.Synopsis{},
+		&models.Genre{},
+		&models.People{},
 
 		// Series
 		&models.Series{},
-		&models.Author{},
-		&models.Artist{},
-		&models.SeriesArtist{},
-		&models.SeriesAuthor{},
+		&models.SeriesPeople{},
+		&models.AnimeSeason{},
+		&models.Anime{},
+		&models.AnimeGenre{},
+		&models.AnimeStudio{},
+		&models.AnimeStudioRelation{},
+		&models.AnimePeople{},
+		&models.AnimeRelease{},
+
+		// &models.Author{},
+		// &models.Artist{},
+		// &models.SeriesArtist{},
+		// &models.SeriesAuthor{},
 	)
 	fmt.Println("Database Migrated")
 }
