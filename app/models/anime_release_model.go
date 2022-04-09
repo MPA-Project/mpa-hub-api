@@ -12,6 +12,7 @@ type AnimeRelease struct {
 	Episode           int       `gorm:"type:int;null;default 0;"`
 	Description       string    `json:"description" validate:"required" gorm:"type:text;null;"`
 	DescriptionImages string    `gorm:"type:text;null;"`
+	UseAds            bool      `gorm:"type:boolean;default:false;"`
 
 	StreamingLink string `gorm:"type:text;null;"`
 	DownloadLink  string `gorm:"type:text;null;"`
