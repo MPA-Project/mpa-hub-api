@@ -14,13 +14,6 @@ func RegenerateAccessToken(c *fiber.Ctx) error {
 	jwtClaims := c.Locals("jwt").(*jwt.Token)
 	claims := jwtClaims.Claims.(jwt.MapClaims)
 
-	if typ := claims["typ"].(string); typ != "refresh" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error":   true,
-			"message": "Invalid token type",
-		})
-	}
-
 	uuid := claims["uuid"].(string)
 
 	var user models.User
@@ -42,8 +35,6 @@ func RegenerateAccessToken(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"error":   false,
 		"message": "OK",
-		// "context": c.Locals("jwt"),
-		// "claim":   claims,
 		"data": fiber.Map{
 			"access_token":          at_token,
 			"acces_token_expired":   time.Now().Add(15 * time.Minute),
