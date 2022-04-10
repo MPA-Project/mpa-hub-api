@@ -93,14 +93,6 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	at_token, rt_token, err := authorization.GenerateNewAccessToken(*user)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error":   true,
-			"message": err.Error(),
-		})
-	}
-
 	request_key := utils.RandomString(128, "alphanum") + "-" + hash.GetMD5Hash(user.ID.String()) + "-" + uuid.New().String()
 
 	var user_request models.UserTicket
@@ -130,19 +122,49 @@ func Register(c *fiber.Ctx) error {
 		}
 	}
 
-	role, err := roles.FindRolesByName("USER")
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error":   true,
-			"message": "Sorry, default user not found",
-		})
+	// Administrator Setup
+	admin_email := os.Getenv("ADMIN_EMAIL_LIST")
+	if payload.Email == admin_email {
+		role, err := roles.FindRolesByName("ADMIN")
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":   true,
+				"message": "Sorry, admin user role not found",
+			})
+		}
+
+		var user_role models.UserRoles
+		user_role.UserID = user.ID
+		user_role.RoleID = role.ID
+		if err := database.DB.Save(&user_role).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error":   true,
+				"message": err.Error(),
+			})
+		}
+	} else {
+		role, err := roles.FindRolesByName("USER")
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":   true,
+				"message": "Sorry, default user role not found",
+			})
+		}
+
+		var user_role models.UserRoles
+		user_role.UserID = user.ID
+		user_role.RoleID = role.ID
+		if err := database.DB.Save(&user_role).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error":   true,
+				"message": err.Error(),
+			})
+		}
 	}
 
-	var user_role models.UserRoles
-	user_role.UserID = user.ID
-	user_role.RoleID = role.ID
-	if err := database.DB.Save(&user_role).Error; err != nil {
-		return c.Status(500).JSON(fiber.Map{
+	at_token, rt_token, err := authorization.GenerateNewAccessToken(*user)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
 		})
