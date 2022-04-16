@@ -17,12 +17,22 @@ type RolesResponse struct {
 
 func RoleList(c *fiber.Ctx) error {
 
-	var roles []models.Role
-	if err := database.DB.Find(&roles).Error; err != nil {
+	var rolesCount int64
+	if err := database.DB.Model(&models.Role{}).Count(&rolesCount).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
 		})
+	}
+
+	var roles []models.Role
+	if rolesCount > 0 {
+		if err := database.DB.Find(&roles).Error; err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":   true,
+				"message": err.Error(),
+			})
+		}
 	}
 
 	var rolesResponse []RolesResponse
@@ -38,6 +48,9 @@ func RoleList(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"error":   false,
 		"message": "OK",
-		"data":    rolesResponse,
+		"data": fiber.Map{
+			"list":  rolesResponse,
+			"total": rolesCount,
+		},
 	})
 }
