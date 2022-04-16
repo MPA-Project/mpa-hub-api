@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"myponyasia.com/hub-api/app/controllers/console/administrators/manage"
 	"myponyasia.com/hub-api/app/controllers/oauth/account"
 	"myponyasia.com/hub-api/app/controllers/oauth/token"
 	"myponyasia.com/hub-api/app/controllers/utils/uploads"
@@ -26,4 +27,19 @@ func PrivateRoutes(app *fiber.App) {
 	routeUtils := app.Group("/utils")
 	// routeUtils.Post("/upload-temporary", middleware.JWTSessionProtected(), uploads.UploadTemporary)
 	routeUtils.Post("/upload-temporary", uploads.UploadTemporary)
+
+	// ================== Console routes ==================
+	routeConsole := app.Group("/console", middleware.JWTSessionProtected())
+
+	// Administrator
+	routeConsoleChino := routeConsole.Group("/chino", middleware.RoleAdmin)
+
+	// Manage
+	routeConsoleChinoManage := routeConsoleChino.Group("/manage")
+
+	// Roles
+	routeConsoleChinoManageRoles := routeConsoleChinoManage.Group("/roles")
+	routeConsoleChinoManageRoles.Get("/", manage.RoleList)
+
+	// ================== End Console routes ==================
 }
