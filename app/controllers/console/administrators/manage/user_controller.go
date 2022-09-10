@@ -27,7 +27,7 @@ func UserList(c *fiber.Ctx) error {
 	var dataCount int64
 	dataCountQuery := database.DB.Model(&models.User{})
 	if len(qQuery) >= 3 {
-		dataCountQuery = dataCountQuery.Where("name LIKE ?", "%"+qQuery+"%")
+		dataCountQuery = dataCountQuery.Where("username LIKE ?", "%"+qQuery+"%")
 	}
 	if err := dataCountQuery.Count(&dataCount).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -39,7 +39,7 @@ func UserList(c *fiber.Ctx) error {
 	var data []models.User
 	dataQuery := database.DB.Model(&models.User{})
 	if len(qQuery) >= 3 {
-		dataQuery = dataQuery.Where("name LIKE ?", "%"+qQuery+"%")
+		dataQuery = dataQuery.Where("username LIKE ?", "%"+qQuery+"%")
 	}
 	if dataCount > 0 {
 		if err := dataQuery.Order(qOrderBy + " " + qOrderByDirection).Limit(qPageSize).Offset(qPageIndex).Find(&data).Error; err != nil {
