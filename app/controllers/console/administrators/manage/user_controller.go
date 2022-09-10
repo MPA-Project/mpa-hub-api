@@ -7,25 +7,23 @@ import (
 	"myponyasia.com/hub-api/pkg/database"
 )
 
-type RolesResponse struct {
-	ID    uuid.UUID
-	Name  string
-	Level int
-
-	UserCount int
+type UserResponse struct {
+	ID       uuid.UUID
+	Username string
+	Email    string
 }
 
-func RoleList(c *fiber.Ctx) error {
+func UserList(c *fiber.Ctx) error {
 
 	var dataCount int64
-	if err := database.DB.Model(&models.Role{}).Count(&dataCount).Error; err != nil {
+	if err := database.DB.Model(&models.User{}).Count(&dataCount).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
 		})
 	}
 
-	var data []models.Role
+	var data []models.User
 	if dataCount > 0 {
 		if err := database.DB.Find(&data).Error; err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -35,13 +33,12 @@ func RoleList(c *fiber.Ctx) error {
 		}
 	}
 
-	var dataResponse []RolesResponse = []RolesResponse{}
-	for _, role := range data {
-		dataResponse = append(dataResponse, RolesResponse{
-			ID:        role.ID,
-			Name:      role.Name,
-			Level:     role.Level,
-			UserCount: 0,
+	var dataResponse []UserResponse = []UserResponse{}
+	for _, user := range data {
+		dataResponse = append(dataResponse, UserResponse{
+			ID:       user.ID,
+			Username: user.Username,
+			Email:    user.Email,
 		})
 	}
 

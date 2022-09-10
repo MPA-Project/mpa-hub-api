@@ -34,12 +34,20 @@ func PrivateRoutes(app *fiber.App) {
 	// Administrator
 	routeConsoleChino := routeConsole.Group("/chino", middleware.RoleAdmin)
 
-	// Manage
+	// Administrator.Manage
 	routeConsoleChinoManage := routeConsoleChino.Group("/manage")
 
-	// Roles
+	// Administrator.Manage.Roles
 	routeConsoleChinoManageRoles := routeConsoleChinoManage.Group("/roles")
 	routeConsoleChinoManageRoles.Get("/", manage.RoleList)
+
+	// Administrator.Manage.Permissions
+	routeConsoleChinoManagePermission := routeConsoleChinoManage.Group("/permissions")
+	routeConsoleChinoManagePermission.Get("/", manage.PermissionList)
+
+	// Administrator.Manage.Users
+	routeConsoleChinoManageUsers := routeConsoleChinoManage.Group("/users")
+	routeConsoleChinoManageUsers.Get("/", manage.UserList)
 
 	// ================== End Console routes ==================
 }
