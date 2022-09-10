@@ -10,7 +10,7 @@ import (
 
 type User struct {
 	ID               uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
-	Username         string    `json:"username" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
+	Username         string    `json:"username" validate:"required,lte=255" gorm:"index;type:varchar(255);not null;"`
 	Email            string    `json:"email" validate:"required,lte=255" gorm:"unique;type:varchar(255);not null;"`
 	Password         string    `json:"password" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
 	ExternalLink     string    `json:"externalLink" gorm:"type:text;null;"`
