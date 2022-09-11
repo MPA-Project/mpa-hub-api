@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"myponyasia.com/hub-api/app/models"
-	"myponyasia.com/hub-api/app/services/universal"
+	"myponyasia.com/hub-api/app/utils/universal"
 	"myponyasia.com/hub-api/pkg/database"
 )
 

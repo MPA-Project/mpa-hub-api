@@ -9,14 +9,15 @@ import (
 )
 
 type User struct {
-	ID               uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
-	Username         string    `json:"username" validate:"required,lte=255" gorm:"index;type:varchar(255);not null;"`
-	Email            string    `json:"email" validate:"required,lte=255" gorm:"unique;type:varchar(255);not null;"`
-	Password         string    `json:"password" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
-	ExternalLink     string    `json:"externalLink" gorm:"type:text;null;"`
-	DonateLink       string    `json:"donateLink" gorm:"type:text;null;"`
-	Avatar           string    `json:"avatar" gorm:"type:text;null;"`
-	AvatarBackground string    `json:"avatarBackground" gorm:"type:text;null;"`
+	ID             uuid.UUID `gorm:"primary_key,type:uuid;size:36;"`
+	Username       string    `json:"username" validate:"required,lte=255" gorm:"index;type:varchar(255);not null;"`
+	Email          string    `json:"email" validate:"required,lte=255" gorm:"unique;type:varchar(255);not null;"`
+	Password       string    `json:"password" validate:"required,lte=255" gorm:"type:varchar(255);not null;"`
+	SocialList     string    `json:"socialList" gorm:"type:text;null;"`
+	DonateList     string    `json:"donateList" gorm:"type:text;null;"`
+	ProfilePicture string    `json:"profilePicture" gorm:"type:text;null;"`
+	ProfileBanner  string    `json:"profileBanner" gorm:"type:text;null;"`
+	Bio            string    `json:"bio" gorm:"type:text;null;"`
 
 	EmailVerify   bool      `gorm:"type:boolean;default:false;"`
 	EmailVerifyAt time.Time `gorm:"default:null;null;"`

@@ -7,6 +7,16 @@ import (
 	"myponyasia.com/hub-api/pkg/database"
 )
 
+type SocialMediaList struct {
+	Name string
+	Url  string
+}
+
+type DonateList struct {
+	Name string
+	Url  string
+}
+
 func Me(c *fiber.Ctx) error {
 	jwtClaims := c.Locals("jwt").(*jwt.Token)
 	claims := jwtClaims.Claims.(jwt.MapClaims)
@@ -25,9 +35,14 @@ func Me(c *fiber.Ctx) error {
 		"error":   false,
 		"message": "OK",
 		"data": fiber.Map{
-			"id":    user.ID.String(),
-			"name":  user.Username,
-			"email": user.Email,
+			"id":               user.ID.String(),
+			"name":             user.Username,
+			"email":            user.Email,
+			"avatar":           nil,
+			"avatarBackground": nil,
+			"bio":              user.Bio,
+			"socialMedia":      []SocialMediaList{},
+			"donateLink":       []DonateList{},
 		},
 	})
 }
