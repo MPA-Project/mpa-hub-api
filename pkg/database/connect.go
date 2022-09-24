@@ -67,6 +67,7 @@ func ConnectDB() {
 		&models.Language{},
 		&models.Genre{},
 		&models.People{},
+		&models.FileManager{},
 
 		// Series
 		&models.Series{},
