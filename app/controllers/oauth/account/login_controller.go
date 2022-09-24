@@ -2,6 +2,7 @@ package account
 
 import (
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -69,14 +70,17 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
+	atExpired, _ := strconv.Atoi(os.Getenv("JWT_ACCESS_TOKEN_EXPIRED"))
+	rtExpired, _ := strconv.Atoi(os.Getenv("JWT_REFRESH_TOKEN_EXPIRED"))
+
 	return c.JSON(fiber.Map{
 		"error":   false,
 		"message": "Signin success",
 		"data": fiber.Map{
 			"access_token":          at_token,
-			"acces_token_expired":   time.Now().Add(15 * time.Minute),
+			"acces_token_expired":   time.Now().Add(time.Duration(atExpired) * time.Minute),
 			"refresh_token":         rt_token,
-			"refresh_token_expired": time.Now().Add(365 * (24 * time.Hour)),
+			"refresh_token_expired": time.Now().Add(time.Duration(rtExpired) * (24 * time.Hour)),
 		},
 	})
 }

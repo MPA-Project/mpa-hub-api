@@ -25,8 +25,8 @@ func PrivateRoutes(app *fiber.App) {
 
 	// Group utilities routes
 	routeUtils := app.Group("/utils")
-	// routeUtils.Post("/upload-temporary", middleware.JWTSessionProtected(), uploads.UploadTemporary)
-	routeUtils.Post("/upload-temporary", uploads.UploadTemporary)
+	routeUtils.Post("/upload-temporary", middleware.JWTSessionProtected(), uploads.UploadTemporary)
+	// routeUtils.Post("/upload-temporary", uploads.UploadTemporary)
 
 	// ================== Console routes ==================
 	routeConsole := app.Group("/console", middleware.JWTSessionProtected())

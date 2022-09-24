@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"github.com/h2non/bimg"
 	"myponyasia.com/hub-api/pkg/utils"
@@ -13,6 +14,11 @@ import (
 func UploadTemporary(c *fiber.Ctx) error {
 
 	go utils.RemoveExpiredFiles()
+
+	jwtClaims := c.Locals("jwt").(*jwt.Token)
+	claims := jwtClaims.Claims.(jwt.MapClaims)
+
+	userUuid := claims["uuid"].(string)
 
 	file, err := c.FormFile("file-upload")
 
@@ -30,13 +36,13 @@ func UploadTemporary(c *fiber.Ctx) error {
 		})
 	}
 
-	filename := uuid.New()
+	filename := fmt.Sprintf("%s--%s", userUuid, uuid.New())
 
-	modified_filename := fmt.Sprintf("./uploads/temp-%s-%s", filename, file.Filename)
+	modifiedFilename := fmt.Sprintf("./uploads/temp-%s-%s", filename, file.Filename)
 
-	c.SaveFile(file, modified_filename)
+	c.SaveFile(file, modifiedFilename)
 
-	buffer, err := bimg.Read(modified_filename)
+	buffer, err := bimg.Read(modifiedFilename)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
@@ -45,10 +51,10 @@ func UploadTemporary(c *fiber.Ctx) error {
 		})
 	}
 
-	defer os.Remove(modified_filename)
+	defer os.Remove(modifiedFilename)
 
-	read_image := bimg.NewImage(buffer)
-	if size, err := read_image.Size(); size.Width >= 5000 || size.Height == 5000 || err != nil {
+	readImage := bimg.NewImage(buffer)
+	if size, err := readImage.Size(); size.Width >= 5000 || size.Height == 5000 || err != nil {
 		if err != nil {
 			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 				"error":   true,
@@ -62,7 +68,7 @@ func UploadTemporary(c *fiber.Ctx) error {
 		})
 	}
 
-	newImage, err := read_image.Convert(bimg.JPEG)
+	newImage, err := readImage.Convert(bimg.JPEG)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
@@ -71,19 +77,46 @@ func UploadTemporary(c *fiber.Ctx) error {
 		})
 	}
 
-	modified_filename = fmt.Sprintf("./uploads/%s%s", filename, ".jpeg")
-	if err := bimg.Write(modified_filename, newImage); err != nil {
+	constructFilename := fmt.Sprintf("%s%s", filename, ".jpeg")
+	modifiedFilename = fmt.Sprintf("./uploads/%s", constructFilename)
+	constructPreviewUrl := fmt.Sprintf("/utils/upload-temporary?filename=%s", constructFilename)
+	if err := bimg.Write(modifiedFilename, newImage); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
 		})
 	}
 
-	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"error":   false,
 		"message": "OK",
 		"data": fiber.Map{
-			"filename": modified_filename,
+			"filename": constructFilename,
+			"path":     modifiedFilename,
+			"preview":  constructPreviewUrl,
 		},
 	})
+}
+
+func UploadTemporaryViewer(c *fiber.Ctx) error {
+
+	filename := c.Query("filename")
+
+	if filename == "" || len(filename) == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": "Filename is missing",
+		})
+	}
+
+	modified_filename := fmt.Sprintf("./uploads/%s", filename)
+
+	if _, err := os.Stat(modified_filename); os.IsNotExist(err) {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error":   true,
+			"message": "File not found",
+		})
+	}
+
+	return c.SendFile(modified_filename)
 }

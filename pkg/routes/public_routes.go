@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 	"myponyasia.com/hub-api/app/controllers/oauth/account"
+	"myponyasia.com/hub-api/app/controllers/utils/uploads"
 	// v1 "myponyasia.com/hub-api/app/controllers/v1"
 )
 
@@ -17,4 +18,8 @@ func PublicRoutes(app *fiber.App) {
 	routeOauth.Post("forgot-password", account.ForgotPassword)
 	routeOauth.Post("forgot-password-confirm", account.ForgotPasswordConfirm)
 	routeOauth.Post("email-verification", account.EmailVerification)
+
+	// Group utilities routes
+	routeUtils := app.Group("/utils")
+	routeUtils.Get("/upload-temporary", uploads.UploadTemporaryViewer)
 }
