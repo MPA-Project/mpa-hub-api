@@ -192,7 +192,7 @@ func UploadAvatar(c *fiber.Ctx) error {
 
 	// S3 Upload
 	uploadFilePath := fmt.Sprintf("user/profile/%s/%s/%s/%s", fileManager.PYear, fileManager.PMonth, fileManager.PDay, constructFilename)
-	go _uploadS3(newImage, uploadFilePath)
+	go _uploadS3(newImage, uploadFilePath, *fileManager)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"error":   false,
@@ -205,8 +205,15 @@ func UploadAvatar(c *fiber.Ctx) error {
 	})
 }
 
-func _uploadS3(newImage []byte, uploadFilePath string) {
+func _uploadS3(newImage []byte, uploadFilePath string, fileManager models.FileManager) {
+
+	fileManager.UploadStatus = "UPLOADED"
 	if err := uploads.UploadS3(newImage, uploadFilePath, nil); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		fileManager.UploadStatus = "FAILED"
+	}
+
+	if err := database.DB.Save(&fileManager).Error; err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 }
