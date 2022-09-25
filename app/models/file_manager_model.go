@@ -11,7 +11,7 @@ type FileManager struct {
 	UserID uuid.UUID `gorm:"type:uuid;null;size:36;"`
 	User   User      `gorm:"foreignkey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
-	Filename  string `gorm:"type:varchar(36);null;size:36;"`
+	Filename  string `gorm:"type:varchar(100);null;size:100;"`
 	Extension string `gorm:"type:varchar(25);null;size:25;"`
 	MimeType  string `gorm:"type:varchar(50);null;size:50;"`
 	PYear     string `gorm:"type:varchar(10);null;size:10;"`
@@ -22,8 +22,11 @@ type FileManager struct {
 	UploadStatus string `gorm:"type:varchar(25);null;size:25;index;default:QUEUE;comment:QUEUE | UPLOADING | UPLOADED | FAILED;"`
 	Filesize     int64  `gorm:"type:bigint;null;default:0;"`
 
-	ImageHeight int `gorm:"type:int;null;default:0;"`
-	ImageWidth  int `gorm:"type:int;null;default:0;"`
+	ImageHeight           int      `gorm:"type:int;null;default:0;"`
+	ImageWidth            int      `gorm:"type:int;null;default:0;"`
+	ImageWebpSupport      bool     `gorm:"type:boolean;null;default:false;"`
+	ImageThumbnailSupport bool     `gorm:"type:boolean;null;default:false;"`
+	ImageAvailableRes     []string `gorm:"type:text;null;"`
 
 	gorm.Model
 }
@@ -34,11 +37,12 @@ func (u *FileManager) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 type FileManagerModelImage struct {
-	ID          uuid.UUID
-	Filename    string
-	PYear       string
-	PMonth      string
-	PDay        string
-	ImageHeight int
-	ImageWidth  int
+	ID                uuid.UUID
+	Filename          string
+	PYear             string
+	PMonth            string
+	PDay              string
+	ImageHeight       int
+	ImageWidth        int
+	ImageAvailableRes []string
 }

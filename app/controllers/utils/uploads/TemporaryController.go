@@ -25,7 +25,7 @@ func UploadTemporary(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
-			"message": "File upload not found",
+			"message": "File upload data not found",
 		})
 	}
 
@@ -68,6 +68,10 @@ func UploadTemporary(c *fiber.Ctx) error {
 		})
 	}
 
+	constructFilename := fmt.Sprintf("%s%s", filename, ".jpeg")
+	modifiedFilename = fmt.Sprintf("./uploads/%s", constructFilename)
+	constructPreviewUrl := fmt.Sprintf("/utils/upload-temporary?filename=%s", constructFilename)
+
 	newImage, err := readImage.Convert(bimg.JPEG)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -77,15 +81,30 @@ func UploadTemporary(c *fiber.Ctx) error {
 		})
 	}
 
-	constructFilename := fmt.Sprintf("%s%s", filename, ".jpeg")
-	modifiedFilename = fmt.Sprintf("./uploads/%s", constructFilename)
-	constructPreviewUrl := fmt.Sprintf("/utils/upload-temporary?filename=%s", constructFilename)
 	if err := bimg.Write(modifiedFilename, newImage); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
 		})
 	}
+
+	// constructFilenameWebp := fmt.Sprintf("%s%s", filename, ".webp")
+	// modifiedFilenameWebp := fmt.Sprintf("./uploads/%s", constructFilenameWebp)
+	// newImage, err = readImage.Convert(bimg.WEBP)
+	// if err != nil {
+	// 	fmt.Fprintln(os.Stderr, err)
+	// 	return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+	// 		"error":   true,
+	// 		"message": err.Error(),
+	// 	})
+	// }
+
+	// if err := bimg.Write(modifiedFilenameWebp, newImage); err != nil {
+	// 	return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+	// 		"error":   true,
+	// 		"message": err.Error(),
+	// 	})
+	// }
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"error":   false,

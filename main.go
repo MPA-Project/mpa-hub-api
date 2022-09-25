@@ -24,6 +24,9 @@ func main() {
 	// Connect to the Database
 	database.ConnectDB()
 
+	// Storage config
+	configs.S3Config()
+
 	// Middlewares.
 	middleware.FiberMiddleware(app) // Register Fiber's middleware for app.
 

@@ -20,8 +20,9 @@ func PrivateRoutes(app *fiber.App) {
 	routeOauth.Post("permissions", middleware.JWTSessionProtected(), account.Permissions)
 
 	// Group user routes
-	routeUser := app.Group("/v1/user/me", middleware.JWTSessionProtected())
-	routeUser.Get("/", user.Me)
+	routeUser := app.Group("/v1/user", middleware.JWTSessionProtected())
+	routeUser.Get("/me", user.Me)
+	routeUser.Post("/profile-picture", user.UploadAvatar)
 
 	// Group utilities routes
 	routeUtils := app.Group("/utils")
