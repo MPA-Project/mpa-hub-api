@@ -5,8 +5,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
-	"myponyasia.com/hub-api/app/models"
 	"myponyasia.com/hub-api/pkg/database"
+	"myponyasia.com/hub-api/pkg/entities"
 	"myponyasia.com/hub-api/pkg/utils/authorization"
 )
 
@@ -16,7 +16,7 @@ func RegenerateAccessToken(c *fiber.Ctx) error {
 
 	uuid := claims["uuid"].(string)
 
-	var user models.User
+	var user entities.User
 	if err := database.DB.First(&user, "id = ?", uuid).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,

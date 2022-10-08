@@ -3,9 +3,9 @@ package manage
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"myponyasia.com/hub-api/app/models"
-	"myponyasia.com/hub-api/app/utils/universal"
 	"myponyasia.com/hub-api/pkg/database"
+	"myponyasia.com/hub-api/pkg/entities"
+	"myponyasia.com/hub-api/pkg/utils/universal"
 )
 
 type UserResponse struct {
@@ -25,7 +25,7 @@ func UserList(c *fiber.Ctx) error {
 	}
 
 	var dataCount int64
-	dataCountQuery := database.DB.Model(&models.User{})
+	dataCountQuery := database.DB.Model(&entities.User{})
 	if len(qQuery) >= 3 {
 		dataCountQuery = dataCountQuery.Where("username LIKE ?", "%"+qQuery+"%")
 	}
@@ -36,8 +36,8 @@ func UserList(c *fiber.Ctx) error {
 		})
 	}
 
-	var data []models.User
-	dataQuery := database.DB.Model(&models.User{})
+	var data []entities.User
+	dataQuery := database.DB.Model(&entities.User{})
 	if len(qQuery) >= 3 {
 		dataQuery = dataQuery.Where("username LIKE ?", "%"+qQuery+"%")
 	}

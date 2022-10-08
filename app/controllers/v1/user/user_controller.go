@@ -12,9 +12,10 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"github.com/h2non/bimg"
-	"myponyasia.com/hub-api/app/models"
-	"myponyasia.com/hub-api/app/services/uploads"
 	"myponyasia.com/hub-api/pkg/database"
+	"myponyasia.com/hub-api/pkg/entities"
+	"myponyasia.com/hub-api/pkg/utils/universal"
+	"myponyasia.com/hub-api/pkg/utils/uploads"
 )
 
 type SocialMediaList struct {
@@ -33,12 +34,22 @@ func Me(c *fiber.Ctx) error {
 
 	uuid := claims["uuid"].(string)
 
-	var user models.User
+	var user entities.User
 	if err := database.DB.First(&user, "id = ?", uuid).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": "User not found",
 		})
+	}
+
+	var userImageAvatar *entities.FileManagerModelImage
+	if err := json.Unmarshal([]byte(user.ProfilePicture), &userImageAvatar); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+	var avatarUrl string
+	if userImageAvatar != nil {
+		avatarUrl = universal.GenerateCDNUrl("user/profile", userImageAvatar)
+		fmt.Fprintln(os.Stderr, avatarUrl)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -48,12 +59,13 @@ func Me(c *fiber.Ctx) error {
 			"id":               user.ID.String(),
 			"name":             user.Username,
 			"email":            user.Email,
-			"avatar":           nil,
+			"avatar":           avatarUrl,
 			"avatarBackground": nil,
 			"bio":              user.Bio,
 			"socialMedia":      []SocialMediaList{},
 			"donateLink":       []DonateList{},
 		},
+		"dbg": userImageAvatar,
 	})
 }
 
@@ -112,7 +124,7 @@ func UploadAvatar(c *fiber.Ctx) error {
 		})
 	}
 
-	var user models.User
+	var user entities.User
 	if err := database.DB.First(&user, "id = ?", userUuid).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
@@ -120,7 +132,8 @@ func UploadAvatar(c *fiber.Ctx) error {
 		})
 	}
 
-	constructFilename := fmt.Sprintf("%s%s", filename, ".jpeg")
+	imageExtension := ".jpeg"
+	constructFilename := fmt.Sprintf("%s%s", filename, imageExtension)
 	modifiedFilename = fmt.Sprintf("./uploads/%s", constructFilename)
 	constructPreviewUrl := fmt.Sprintf("%sutils/upload-temporary?filename=%s", os.Getenv("SERVER_URL_PUBLIC"), constructFilename)
 
@@ -144,10 +157,10 @@ func UploadAvatar(c *fiber.Ctx) error {
 	year, month, day := time.Now().Date()
 
 	// Insert to database
-	var fileManager = new(models.FileManager)
+	var fileManager = new(entities.FileManager)
 	fileManager.UserID = user.ID
 	fileManager.Filename = filename
-	fileManager.Extension = mtype.Extension()
+	fileManager.Extension = imageExtension
 	fileManager.MimeType = mtype.String()
 	fileManager.PYear = strconv.Itoa(year)
 	fileManager.PMonth = fmt.Sprintf("%02d", month)
@@ -165,7 +178,7 @@ func UploadAvatar(c *fiber.Ctx) error {
 		})
 	}
 
-	var userImageAvatar = new(models.FileManagerModelImage)
+	var userImageAvatar = new(entities.FileManagerModelImage)
 	userImageAvatar.Filename = constructFilename
 	userImageAvatar.ID = fileManager.ID
 	userImageAvatar.PYear = fileManager.PYear
@@ -192,7 +205,7 @@ func UploadAvatar(c *fiber.Ctx) error {
 
 	// S3 Upload
 	uploadFilePath := fmt.Sprintf("user/profile/%s/%s/%s/%s", fileManager.PYear, fileManager.PMonth, fileManager.PDay, constructFilename)
-	go _uploadS3(newImage, uploadFilePath, *fileManager)
+	go uploads.UploadS3Update(newImage, uploadFilePath, *fileManager)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"error":   false,
@@ -203,17 +216,4 @@ func UploadAvatar(c *fiber.Ctx) error {
 			"preview":  constructPreviewUrl,
 		},
 	})
-}
-
-func _uploadS3(newImage []byte, uploadFilePath string, fileManager models.FileManager) {
-
-	fileManager.UploadStatus = "UPLOADED"
-	if err := uploads.UploadS3(newImage, uploadFilePath, nil); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		fileManager.UploadStatus = "FAILED"
-	}
-
-	if err := database.DB.Save(&fileManager).Error; err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
 }

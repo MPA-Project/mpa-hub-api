@@ -9,7 +9,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"myponyasia.com/hub-api/app/models"
+	"myponyasia.com/hub-api/pkg/entities"
 )
 
 // Declare the variable for the database
@@ -54,31 +54,31 @@ func ConnectDB() {
 	DB.AutoMigrate(
 
 		// Base User
-		&models.User{},
-		&models.UserRoles{},
-		&models.Role{},
-		&models.UserTicket{},
-		&models.Group{},
-		&models.UserGroup{},
-		&models.Permission{},
-		&models.RolePermissions{},
+		&entities.User{},
+		&entities.UserRoles{},
+		&entities.Role{},
+		&entities.UserTicket{},
+		&entities.Group{},
+		&entities.UserGroup{},
+		&entities.Permission{},
+		&entities.RolePermissions{},
 
 		// Base Data
-		&models.Language{},
-		&models.Genre{},
-		&models.People{},
-		&models.FileManager{},
+		&entities.Language{},
+		&entities.Genre{},
+		&entities.People{},
+		&entities.FileManager{},
 
 		// Series
-		&models.Series{},
-		&models.SeriesPeople{},
-		&models.AnimeSeason{},
-		&models.Anime{},
-		&models.AnimeGenre{},
-		&models.AnimeStudio{},
-		&models.AnimeStudioRelation{},
-		&models.AnimePeople{},
-		&models.AnimeRelease{},
+		&entities.Series{},
+		&entities.SeriesPeople{},
+		&entities.AnimeSeason{},
+		&entities.Anime{},
+		&entities.AnimeGenre{},
+		&entities.AnimeStudio{},
+		&entities.AnimeStudioRelation{},
+		&entities.AnimePeople{},
+		&entities.AnimeRelease{},
 
 		// &models.Author{},
 		// &models.Artist{},

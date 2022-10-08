@@ -3,6 +3,7 @@ package uploads
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -10,6 +11,8 @@ import (
 	aws_types "github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/gabriel-vasile/mimetype"
 	"myponyasia.com/hub-api/pkg/configs"
+	"myponyasia.com/hub-api/pkg/database"
+	"myponyasia.com/hub-api/pkg/entities"
 )
 
 func UploadS3(file []byte, filepath string, metadata map[string]string) error {
@@ -40,4 +43,17 @@ func DeleteS3(filepath string) error {
 	}
 
 	return nil
+}
+
+func UploadS3Update(newImage []byte, uploadFilePath string, fileManager entities.FileManager) {
+
+	fileManager.UploadStatus = "UPLOADED"
+	if err := UploadS3(newImage, uploadFilePath, nil); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		fileManager.UploadStatus = "FAILED"
+	}
+
+	if err := database.DB.Save(&fileManager).Error; err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
 }

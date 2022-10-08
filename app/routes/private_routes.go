@@ -7,7 +7,7 @@ import (
 	"myponyasia.com/hub-api/app/controllers/oauth/token"
 	"myponyasia.com/hub-api/app/controllers/utils/uploads"
 	"myponyasia.com/hub-api/app/controllers/v1/user"
-	"myponyasia.com/hub-api/pkg/middleware"
+	"myponyasia.com/hub-api/app/middleware"
 )
 
 // PrivateRoutes func for describe group of private routes.

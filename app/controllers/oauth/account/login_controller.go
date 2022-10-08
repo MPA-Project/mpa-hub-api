@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"myponyasia.com/hub-api/app/models"
 	"myponyasia.com/hub-api/pkg/database"
+	"myponyasia.com/hub-api/pkg/entities"
 	"myponyasia.com/hub-api/pkg/utils"
 	"myponyasia.com/hub-api/pkg/utils/authorization"
 	"myponyasia.com/hub-api/pkg/utils/hash"
@@ -46,7 +46,7 @@ func Login(c *fiber.Ctx) error {
 		}
 	}
 
-	var userEmail models.User
+	var userEmail entities.User
 	err := database.DB.First(&userEmail, "email = ?", payload.Email).Error
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

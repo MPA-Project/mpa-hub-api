@@ -10,9 +10,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"myponyasia.com/hub-api/app/models"
 	"myponyasia.com/hub-api/app/services/roles"
 	"myponyasia.com/hub-api/pkg/database"
+	"myponyasia.com/hub-api/pkg/entities"
 	"myponyasia.com/hub-api/pkg/utils"
 	"myponyasia.com/hub-api/pkg/utils/authorization"
 	"myponyasia.com/hub-api/pkg/utils/hash"
@@ -61,7 +61,7 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	var countUserEmail int64
-	database.DB.Model(&models.User{}).Where("email = ?", payload.Email).Count(&countUserEmail)
+	database.DB.Model(&entities.User{}).Where("email = ?", payload.Email).Count(&countUserEmail)
 	if countUserEmail > 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
@@ -73,7 +73,7 @@ func Register(c *fiber.Ctx) error {
 	payload.Email = strings.ToLower(payload.Email)
 
 	var countUserUsername int64
-	database.DB.Model(&models.User{}).Where("username = ?", payload.Username).Count(&countUserUsername)
+	database.DB.Model(&entities.User{}).Where("username = ?", payload.Username).Count(&countUserUsername)
 	if countUserUsername > 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
@@ -81,7 +81,7 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	var user = new(models.User)
+	var user = new(entities.User)
 	user.Email = payload.Email
 	user.Username = payload.Username
 	user.Password = payload.PasswordConfirm
@@ -96,7 +96,7 @@ func Register(c *fiber.Ctx) error {
 
 	request_key := utils.RandomString(128, "alphanum") + "-" + hash.GetMD5Hash(user.ID.String()) + "-" + uuid.New().String()
 
-	var user_request models.UserTicket
+	var user_request entities.UserTicket
 	if err := database.DB.Where("user_id = ?", user.ID).Where("request_type = ?", "EMAIL_VERIFICATION").First(&user_request).Error; err != nil {
 		user_request.UserID = user.ID
 		user_request.RequestType = "EMAIL_VERIFICATION"
@@ -134,7 +134,7 @@ func Register(c *fiber.Ctx) error {
 			})
 		}
 
-		var user_role models.UserRoles
+		var user_role entities.UserRoles
 		user_role.UserID = user.ID
 		user_role.RoleID = role.ID
 		if err := database.DB.Save(&user_role).Error; err != nil {
@@ -152,7 +152,7 @@ func Register(c *fiber.Ctx) error {
 			})
 		}
 
-		var user_role models.UserRoles
+		var user_role entities.UserRoles
 		user_role.UserID = user.ID
 		user_role.RoleID = role.ID
 		if err := database.DB.Save(&user_role).Error; err != nil {

@@ -3,9 +3,9 @@ package manage
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"myponyasia.com/hub-api/app/models"
-	"myponyasia.com/hub-api/app/utils/universal"
 	"myponyasia.com/hub-api/pkg/database"
+	"myponyasia.com/hub-api/pkg/entities"
+	"myponyasia.com/hub-api/pkg/utils/universal"
 )
 
 type PermissionResponse struct {
@@ -26,7 +26,7 @@ func PermissionList(c *fiber.Ctx) error {
 	}
 
 	var dataCount int64
-	dataCountQuery := database.DB.Model(&models.Permission{})
+	dataCountQuery := database.DB.Model(&entities.Permission{})
 	if len(qQuery) >= 3 {
 		dataCountQuery = dataCountQuery.Where("name LIKE ?", "%"+qQuery+"%")
 	}
@@ -37,8 +37,8 @@ func PermissionList(c *fiber.Ctx) error {
 		})
 	}
 
-	var data []models.Permission
-	dataQuery := database.DB.Model(&models.Permission{})
+	var data []entities.Permission
+	dataQuery := database.DB.Model(&entities.Permission{})
 	if len(qQuery) >= 3 {
 		dataQuery = dataQuery.Where("name LIKE ?", "%"+qQuery+"%")
 	}

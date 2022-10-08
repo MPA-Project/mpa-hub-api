@@ -8,8 +8,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
-	"myponyasia.com/hub-api/app/models"
 	"myponyasia.com/hub-api/app/services/roles"
+	"myponyasia.com/hub-api/pkg/entities"
 )
 
 type RefreshTokenClaims struct {
@@ -37,7 +37,7 @@ func init() {
 	}
 }
 
-func GenerateNewAccessToken(user models.User) (string, string, error) {
+func GenerateNewAccessToken(user entities.User) (string, string, error) {
 	key, err := jwt.ParseRSAPrivateKeyFromPEM(PrivateKey)
 	if err != nil {
 		return "", "", err
