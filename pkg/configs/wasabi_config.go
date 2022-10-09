@@ -20,11 +20,6 @@ func S3Config() {
 	STORAGE_ACCESS_KEY := os.Getenv("STORAGE_ACCESS_KEY")
 	STORAGE_SECRET_KEY := os.Getenv("STORAGE_SECRET_KEY")
 
-	fmt.Println("Storage s3 config endpoint", STORAGE_ENDPOINT)
-	fmt.Println("Storage s3 config region", STORAGE_REGION)
-	fmt.Println("Storage s3 config access key", STORAGE_ACCESS_KEY)
-	fmt.Println("Storage s3 config secret key", STORAGE_SECRET_KEY)
-
 	customResolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 		return aws.Endpoint{
 			PartitionID:   "aws",

@@ -2,7 +2,6 @@ package uploads
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"os"
 
@@ -19,7 +18,7 @@ func UploadS3(file []byte, filepath string, metadata map[string]string) error {
 	mtype := mimetype.Detect(file)
 	var acl aws_types.ObjectCannedACL = "public-read"
 	STORAGE_BUCKET := os.Getenv("STORAGE_BUCKET")
-	if _, err := configs.S3Service.PutObject(context.TODO(), &s3.PutObjectInput{
+	if _, err := configs.S3Service.PutObject(configs.Ctx, &s3.PutObjectInput{
 		Bucket:       aws.String(STORAGE_BUCKET),
 		Body:         bytes.NewReader(file),
 		Key:          aws.String(filepath),
@@ -35,7 +34,7 @@ func UploadS3(file []byte, filepath string, metadata map[string]string) error {
 }
 
 func DeleteS3(filepath string) error {
-	if _, err := configs.S3Service.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+	if _, err := configs.S3Service.DeleteObject(configs.Ctx, &s3.DeleteObjectInput{
 		Bucket: aws.String(os.Getenv("STORAGE_BUCKET")),
 		Key:    aws.String(filepath),
 	}); err != nil {
@@ -45,7 +44,7 @@ func DeleteS3(filepath string) error {
 	return nil
 }
 
-func UploadS3Update(newImage []byte, uploadFilePath string, fileManager entities.FileManager) {
+func UploadS3AndUpdate(newImage []byte, uploadFilePath string, fileManager entities.FileManager) {
 
 	fileManager.UploadStatus = "UPLOADED"
 	if err := UploadS3(newImage, uploadFilePath, nil); err != nil {

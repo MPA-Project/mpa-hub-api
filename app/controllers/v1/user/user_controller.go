@@ -205,7 +205,24 @@ func UploadAvatar(c *fiber.Ctx) error {
 
 	// S3 Upload
 	uploadFilePath := fmt.Sprintf("user/profile/%s/%s/%s/%s", fileManager.PYear, fileManager.PMonth, fileManager.PDay, constructFilename)
-	go uploads.UploadS3Update(newImage, uploadFilePath, *fileManager)
+	go uploads.UploadS3AndUpdate(newImage, uploadFilePath, *fileManager)
+
+	// Test meilisearch
+	// _, err = configs.MSClient.Index("test").AddDocuments(userImageAvatar)
+	// if err != nil {
+	// 	return c.Status(500).JSON(fiber.Map{
+	// 		"error":   true,
+	// 		"message": err.Error(),
+	// 	})
+	// }
+
+	// testResult, err := configs.MSClient.Index("test").Search("3cb9452f", &meilisearch.SearchRequest{})
+	// if err != nil {
+	// 	return c.Status(500).JSON(fiber.Map{
+	// 		"error":   true,
+	// 		"message": err.Error(),
+	// 	})
+	// }
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"error":   false,
@@ -215,5 +232,6 @@ func UploadAvatar(c *fiber.Ctx) error {
 			"path":     modifiedFilename,
 			"preview":  constructPreviewUrl,
 		},
+		// "debug": testResult,
 	})
 }

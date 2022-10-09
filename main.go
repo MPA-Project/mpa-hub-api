@@ -27,6 +27,12 @@ func main() {
 	// Storage config
 	configs.S3Config()
 
+	// MeiliSearch Config
+	configs.MeiliSearchConfig()
+
+	// Redis Config
+	configs.RedisConfig()
+
 	// Middlewares.
 	middleware.FiberMiddleware(app) // Register Fiber's middleware for app.
 
