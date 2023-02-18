@@ -21,14 +21,14 @@ build: clean test
 run: swag build
 	$(BUILD_DIR)/$(APP_NAME)
 
-migrate.up:
-	migrate -path $(MIGRATIONS_FOLDER) -database "$(DATABASE_URL)" up
+# migrate.up:
+# 	migrate -path $(MIGRATIONS_FOLDER) -database "$(DATABASE_URL)" up
 
-migrate.down:
-	migrate -path $(MIGRATIONS_FOLDER) -database "$(DATABASE_URL)" down
+# migrate.down:
+# 	migrate -path $(MIGRATIONS_FOLDER) -database "$(DATABASE_URL)" down
 
-migrate.force:
-	migrate -path $(MIGRATIONS_FOLDER) -database "$(DATABASE_URL)" force $(version)
+# migrate.force:
+# 	migrate -path $(MIGRATIONS_FOLDER) -database "$(DATABASE_URL)" force $(version)
 
 docker.run: docker.network docker.postgres docker.fiber migrate.up
 

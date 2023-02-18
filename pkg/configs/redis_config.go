@@ -8,9 +8,9 @@ import (
 
 func RedisConfig() {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     "127.0.0.1:6379",
+		Password: "",
+		DB:       0,
 	})
 
 	err := rdb.Set(Ctx, "key", "value", 0).Err()
@@ -32,6 +32,4 @@ func RedisConfig() {
 	} else {
 		fmt.Println("key2", val2)
 	}
-	// Output: key value
-	// key2 does not exist
 }
