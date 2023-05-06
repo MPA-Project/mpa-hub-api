@@ -2,14 +2,21 @@ package configs
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/redis/go-redis/v9"
 )
 
 func RedisConfig() {
+	REDIS_HOST := os.Getenv("REDIS_HOST")
+	REDIS_PORT := os.Getenv("REDIS_PORT")
+	REDIS_USER := os.Getenv("REDIS_USER")
+	REDIS_PASS := os.Getenv("REDIS_PASS")
+
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "127.0.0.1:6379",
-		Password: "",
+		Addr:     REDIS_HOST + ":" + REDIS_PORT,
+		Username: REDIS_USER,
+		Password: REDIS_PASS,
 		DB:       0,
 	})
 

@@ -1,11 +1,17 @@
 package configs
 
-import "github.com/meilisearch/meilisearch-go"
+import (
+	"os"
+
+	"github.com/meilisearch/meilisearch-go"
+)
 
 var MSClient *meilisearch.Client
 
 func MeiliSearchConfig() {
+	MEILISEARCH_HOST := os.Getenv("MEILISEARCH_HOST")
+
 	MSClient = meilisearch.NewClient(meilisearch.ClientConfig{
-		Host: "http://localhost:7700",
+		Host: MEILISEARCH_HOST,
 	})
 }
