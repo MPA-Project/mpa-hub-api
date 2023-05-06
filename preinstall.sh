@@ -4,7 +4,7 @@
 # NOTE: deprecated! Try libvips installation: https://libvips.github.io/libvips/install.html
 #
 
-vips_version_minimum=8.14.0
+vips_version_minimum=8.14.2
 vips_version_latest_major_minor=8.14
 vips_version_latest_patch=2
 vips_version_full="$vips_version_latest_major_minor.$vips_version_latest_patch"
@@ -13,7 +13,7 @@ openslide_version_minimum=3.4.0
 openslide_version_latest_major_minor=3.4
 openslide_version_latest_patch=1
 
-tarbal_url="https://github.com/libvips/libvips/releases/download/v$vips_version_full/vips-$vips_version_full.tar.gz"
+tarbal_url="https://github.com/libvips/libvips/releases/download/v$vips_version_full/vips-$vips_version_full.tar.xz"
 
 install_libvips_from_source() {
   # Download tarball
