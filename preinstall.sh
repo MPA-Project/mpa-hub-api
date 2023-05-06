@@ -13,7 +13,7 @@ openslide_version_minimum=3.4.0
 openslide_version_latest_major_minor=3.4
 openslide_version_latest_patch=1
 
-tarbal_url="https://github.com/libvips/libvips/releases/download/v$vips_version_full/vips-$vips_version_full.tar.xz"
+tarbal_url="https://github.com/libvips/libvips/releases/download/v$vips_version_full/vips-$vips_version_full.tar.gz"
 
 install_libvips_from_source() {
   # Download tarball
